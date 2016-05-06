@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="netInfoWarning">当前是3G/4G网络，请注意流量使用</string>
+    <string name="noNetWork">当前无网络连接...</string>
+</resources>

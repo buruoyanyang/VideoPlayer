@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">VideoPlayer</string>
+    <string name="settingApp">正在初始化应用...</string>
+    <string name="netInfoWarning">当前是3G/4G网络，请注意流量使用</string>
+    <string name="noNetWork">当前无网络连接...</string>
+    <string name="appId">74</string>
+    <string name="appVersion">1.0</string>
+    <string name="aesKey">dd358748fcabdda1</string>
+</resources>
