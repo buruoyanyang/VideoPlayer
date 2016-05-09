@@ -13,19 +13,19 @@ import okhttp3.Response;
  */
 
 /**
-错误码：
-    0：服务器掉线
-    1：读写失败
-    2：解密失败
-    5：未知错误
-**/
+ * 错误码：
+ * 0：服务器掉线
+ * 1：读写失败
+ * 2：解密失败
+ * 5：未知错误
+ **/
 public class BaseHttpClient {
     public static boolean serverisonline = true;
     public static String SERVER_IS_TIMEOUT = "0";
     public static String IO_FAIL = "1";
     public static String UNKNOW_ERROR = "5";
-    public static String getInfoBase(String url)
-    {
+
+    public static String getInfoBase(String url) {
         OkHttpClient client = new OkHttpClient();
         Request request = new Request
                 .Builder()
@@ -40,33 +40,26 @@ public class BaseHttpClient {
             } else {
                 return response.body().string();
             }
-        }
-        catch (Exception ignored)
-        {
+        } catch (Exception ignored) {
             return UNKNOW_ERROR;
         }
     }
 
-    public static String getInfoWithAES(String url,String key)
-    {
+    public static String getInfoWithAES(String url, String key) {
         OkHttpClient client = new OkHttpClient();
         Request request = new Request
                 .Builder()
                 .url(url)
                 .build();
         Response response;
-        try
-        {
+        try {
             response = client.newCall(request).execute();
-            if (!response.isSuccessful())
-            {
+            if (!response.isSuccessful()) {
                 serverisonline = false;
                 return SERVER_IS_TIMEOUT;
-            }
-            else
-            {
+            } else {
                 //解密操作
-                return BaseAESDecoder.decoder(key,response.body().string());
+                return BaseAESDecoder.decoder(key, response.body().string());
             }
         } catch (IOException e) {
             //读写失败
@@ -74,28 +67,23 @@ public class BaseHttpClient {
         }
     }
 
-    public static String getInfoWithData(String url,String key)
-    {
+    public static String getInfoWithData(String url, String key) {
         OkHttpClient client = new OkHttpClient();
         Request request = new Request
                 .Builder()
                 .url(url)
                 .build();
         Response response;
-        try
-        {
+        try {
             response = client.newCall(request).execute();
-            if (!response.isSuccessful())
-            {
+            if (!response.isSuccessful()) {
                 serverisonline = false;
                 return SERVER_IS_TIMEOUT;
-            }
-            else
-            {
+            } else {
                 //先进行json解析
                 Gson gson = new Gson();
-                Data resultData = gson.fromJson(response.body().toString(), Data.class);
-                return BaseAESDecoder.decoder(key,resultData.data);
+                Data resultData = gson.fromJson(response.body().string(), Data.class);
+                return BaseAESDecoder.decoder(key, resultData.data);
             }
         } catch (IOException e) {
             return IO_FAIL;
@@ -103,6 +91,7 @@ public class BaseHttpClient {
             return UNKNOW_ERROR;
         }
     }
+
     static class Data {
         String data;
     }

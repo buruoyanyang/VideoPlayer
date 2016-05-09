@@ -9,11 +9,11 @@ public class BaseAESDecoder {
     public static String IO_FAIL = "1";
     public static String DECODER_FAIL = "2";
     public static String UNKNOW_ERROR = "5";
-    public static String decoder(String key,String ciphertext)
-    {
+
+    public static String decoder(String key, String ciphertext) {
         String result = "";
         try {
-            byte[] tempResult = AESDecoder.Decrypt(key, ciphertext);
+            byte[] tempResult = AESDecoder.Decrypt(ciphertext, key);
             if (tempResult != null) {
                 return new String(tempResult, "UTF-8");
             }

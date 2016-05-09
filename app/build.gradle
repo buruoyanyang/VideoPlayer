@@ -29,5 +29,7 @@ dependencies {
     compile 'com.wang.avi:library:1.0.4'             //loading图
     compile 'com.nineoldandroids:library:2.4.0'
     compile 'com.github.rey5137:material:1.2.2'      //material风格
-    compile 'org.greenrobot:eventbus:3.0.0'          //事件处理
+    compile 'org.greenrobot:eventbus:3.0.0'          //消息处理
+    compile 'com.makeramen:roundedimageview:2.2.1'   //圆角图片
+    compile 'jp.wasabeef:glide-transformations:2.0.1' //基于glide的裁剪库
 }

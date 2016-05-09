@@ -6,4 +6,7 @@
     <string name="appId">74</string>
     <string name="appVersion">1.0</string>
     <string name="aesKey">dd358748fcabdda1</string>
+    <string name="login_ch">登陆</string>
+    <string name="logout_ch">注销</string>
+    <string name="no_net_ch">当前无网络链接</string>
 </resources>

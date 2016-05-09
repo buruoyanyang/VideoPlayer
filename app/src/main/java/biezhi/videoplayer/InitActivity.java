@@ -3,6 +3,7 @@ package biezhi.videoplayer;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Point;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
@@ -11,6 +12,7 @@ import android.provider.Settings;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.telephony.TelephonyManager;
+import android.view.Display;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -39,12 +41,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-import biezhi.videoplayer.CustomerClass.AESDecoder;
 import biezhi.videoplayer.CustomerClass.BaseAESDecoder;
 import biezhi.videoplayer.CustomerClass.BaseHttpClient;
 import biezhi.videoplayer.DataModel.CateModel;
 import biezhi.videoplayer.DataModel.HomeModel;
 import biezhi.videoplayer.DataModel.LoginModel;
+import biezhi.videoplayer.DataModel.WeiXinModel;
 import biezhi.videoplayer.MessageBox.ChannelBox;
 import biezhi.videoplayer.MessageBox.CheckUserMessage;
 
@@ -70,7 +72,8 @@ public class InitActivity extends AppCompatActivity {
         getFirstInfo();
         setContentView(R.layout.activity_init);
         StatusBarUtil.setTranslucent(this, 0);
-        EventBus.getDefault().register(this.getApplicationContext());
+        appData = (Data) this.getApplicationContext();
+        EventBus.getDefault().register(this);
         initClass();
     }
 
@@ -85,18 +88,43 @@ public class InitActivity extends AppCompatActivity {
         }
         getDeviceId();
         //先判断网络状态
-        appData = (Data) this.getApplicationContext();
+        //获取屏幕大小
+        int screenHeight;
+        int screenWidth;
+        if (Integer.valueOf(android.os.Build.VERSION.SDK) > 13) {
+            Display display = getWindowManager().getDefaultDisplay();
+            Point size = new Point();
+            display.getSize(size);
+            screenHeight = size.y;
+            screenWidth = size.x;
+        } else {
+            screenWidth = getWindowManager().getDefaultDisplay().getWidth();
+            screenHeight = getWindowManager().getDefaultDisplay().getHeight();
+        }
+        appData.setScreenHeight(screenHeight);
+        appData.setScreenWidth(screenWidth);
         if (!checkNetWork()) {
             //以离线状态启动
-            AlertDialog mDialog = new AlertDialog.Builder(this.getApplicationContext()).create();
+            AlertDialog mDialog = new AlertDialog.Builder(this).create();
             mDialog.setTitle(R.string.noNetWork);
             mDialog.setMessage("无网络链接，现在就去打开WiFi？");
-            mDialog.setButton(1, "好", buttonClick);
-            mDialog.setButton(2, "离线启动", buttonClick);
+            mDialog.setButton(DialogInterface.BUTTON_NEGATIVE, "好", buttonClick);
+            mDialog.setButton(DialogInterface.BUTTON_POSITIVE, "离线启动", buttonClick);
+            mDialog.show();
         }
-        //请求网络
-        EventBus.getDefault().post(new ChannelBox());
-        getFromSDCard();
+        if (isNoNet) {
+            if (isFirstInit) {
+                Toast.makeText(this.getApplicationContext(), "请联网后再试！", Toast.LENGTH_LONG).show();
+            } else {
+                //不加载频道，不验证账号
+                //todo 直接跳转
+                startActivity(new Intent(InitActivity.this, MainActivity.class));
+                finish();
+            }
+        } else {
+            getFromSDCard();
+            EventBus.getDefault().post(new ChannelBox());
+        }
     }
 
     /**
@@ -110,7 +138,7 @@ public class InitActivity extends AppCompatActivity {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-            if (which == 1) {
+            if (which != DialogInterface.BUTTON_POSITIVE) {
                 startActivity(new Intent(Settings.ACTION_WIRELESS_SETTINGS));
             } else {
                 //离线启动
@@ -143,7 +171,7 @@ public class InitActivity extends AppCompatActivity {
     }
 
     @Subscribe(threadMode = ThreadMode.ASYNC)
-    private void getChannelFromServer(ChannelBox channelBox) {
+    public void getChannelFromServer(ChannelBox channelBox) {
         //异步请求网络
         String result = BaseHttpClient.getInfoWithData("http://115.29.190.54:99/category.aspx?appid=" + appData.appId + "&version=" + appData.appVersion, getString(R.string.aesKey));
         if (result.length() < 100) {
@@ -171,9 +199,43 @@ public class InitActivity extends AppCompatActivity {
                 nameList.add(content.getName());
                 //不加载图片
             }
+            appData.setCateUrls(urlList);
+            appData.setCateIds(cateIdList);
+            appData.setCateNames(nameList);
             //通知频道获取完成
         }
+        result = BaseHttpClient.getInfoBase("http://115.29.190.54:99/idfa.aspx?idfa=" + appData.getDeviceId());
+        if (result.length() < 100) {
+            switch (result) {
+                case "0":
+                    //服务器连接失败
+                    break;
+                case "1":
+                    //io读写错误
+                    break;
+                case "2":
+                    //解密错误
+                    break;
+                case "5":
+                    //未知错误
+                    break;
+            }
+        } else {
+            Gson gson = new Gson();
+            WeiXinModel weiXinModel = gson.fromJson(result, WeiXinModel.class);
+            appData.setWeixinId(weiXinModel.getWx());
+            appData.setWeixinBanner(weiXinModel.getBanner());
+        }
+        result = BaseHttpClient.getInfoWithData("http://115.29.190.54:99/Home.aspx?appid=" + appData.appId + "&version=" + appData.appVersion, getString(R.string.aesKey));
+        if (result.length() > 10) {
+            Gson gson = new Gson();
+            HomeModel homeModel = gson.fromJson(result, HomeModel.class);
+            appData.setHomeEntityList(homeModel.getHome());
+        }
+        //全部获取完毕，准备跳转
+        startActivity(new Intent(InitActivity.this, MainActivity.class));
     }
+
 
     private void getFromSDCard() {
         File appDir = new File(Environment.getExternalStorageDirectory(), "BieZhi");
@@ -220,7 +282,7 @@ public class InitActivity extends AppCompatActivity {
     }
 
     @Subscribe(threadMode = ThreadMode.ASYNC)
-    private void checkUser(CheckUserMessage checkUserMessage) {
+    public void checkUser(CheckUserMessage checkUserMessage) {
         if (!appData.getUserName().equals("")) {
             //请求网络
             String result = BaseHttpClient.getInfoWithData("http://115.29.190.54:12345/mLogin.aspx?tel=" + appData.getUserName() + "&password=" + appData.getUserPassword() + "&idfa=" + appData.getDeviceId(), getString(R.string.aesKey));
@@ -232,6 +294,7 @@ public class InitActivity extends AppCompatActivity {
                 appData.setUserPassword("");
                 appData.setExUser(true);
             }
+            //验证将信息写入本地
         }
     }
 

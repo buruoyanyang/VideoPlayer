@@ -2,6 +2,11 @@ package biezhi.videoplayer;
 
 import android.app.Application;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import biezhi.videoplayer.DataModel.HomeModel;
+
 /**
  * Created by xiaofeng on 16/5/6.
  */
@@ -20,26 +25,87 @@ public class Data extends Application {
     private boolean isExUser = false;
 
     //当前版本信息
-    public String appId = getString(R.string.appId);
-    public String appVersion = getString(R.string.appVersion);
+    public String appId = "74";
+    public String appVersion = "1.0";
 
-    public void setExUser(boolean isExUser)
-    {
+    //频道信息
+    private List<String> cateUrls = new ArrayList<>();
+    private List<Integer> cateIds = new ArrayList<>();
+    private List<String> cateNames = new ArrayList<>();
+
+
+
+    //首页推荐信息
+    private List<HomeModel.HomeEntity> homeEntityList = new ArrayList<>();
+
+
+    //微信
+    private String weixinId = "";
+    private String weixinBanner = "";
+
+
+    public List<HomeModel.HomeEntity> getHomeEntityList() {
+        return homeEntityList;
+    }
+
+    public void setHomeEntityList(List<HomeModel.HomeEntity> homeEntityList) {
+        this.homeEntityList = homeEntityList;
+    }
+
+    public void setWeixinBanner(String weixinBanner) {
+        this.weixinBanner = weixinBanner;
+    }
+
+    public String getWeixinBanner() {
+        return weixinBanner;
+    }
+
+    public String getWeixinId() {
+        return weixinId;
+    }
+
+    public void setWeixinId(String weixinId) {
+        this.weixinId = weixinId;
+    }
+
+    public void setCateUrls(List<String> cateUrls) {
+        this.cateUrls = cateUrls;
+    }
+
+    public List<String> getCateUrls() {
+        return this.cateUrls;
+    }
+
+    public void setCateIds(List<Integer> cateIds) {
+        this.cateIds = cateIds;
+    }
+
+    public List<Integer> getCateIds() {
+        return this.cateIds;
+    }
+
+    public void setCateNames(List<String> cateNames) {
+        this.cateNames = cateNames;
+    }
+
+    public List<String> getCateNames() {
+        return this.cateNames;
+    }
+
+
+    public void setExUser(boolean isExUser) {
         this.isExUser = isExUser;
     }
 
-    public boolean getExUser()
-    {
+    public boolean getExUser() {
         return this.isExUser;
     }
 
-    public void setDeviceId(String deviceId)
-    {
+    public void setDeviceId(String deviceId) {
         this.deviceId = deviceId;
     }
 
-    public String getDeviceId()
-    {
+    public String getDeviceId() {
         return this.deviceId;
     }
 
