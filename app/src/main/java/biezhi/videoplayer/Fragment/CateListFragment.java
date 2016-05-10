@@ -12,8 +12,11 @@ import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+
 import biezhi.videoplayer.Data;
 import biezhi.videoplayer.R;
+import jp.wasabeef.glide.transformations.CropCircleTransformation;
 
 /**
  * Created by xiaofeng on 16/5/9.
@@ -73,7 +76,11 @@ public class CateListFragment extends Fragment {
             ImageView imageView = ViewHolder.get(convertView,R.id.cate_image);
             TextView textView = ViewHolder.get(convertView,R.id.cate_name);
             //使用glide-transformations加载图片
-            
+            Glide.with(superContext)
+                    .load(appData.getCateUrls().get(position))
+                    .bitmapTransform(new CropCircleTransformation(superContext))
+                    .into(imageView);
+            textView.setText(appData.getCateNames().get(position));
             return convertView;
         }
     }

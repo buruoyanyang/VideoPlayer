@@ -294,7 +294,7 @@ public class InitActivity extends AppCompatActivity {
                 appData.setUserPassword("");
                 appData.setExUser(true);
             }
-            //验证将信息写入本地
+            //写本地太消耗时间，不写
         }
     }
 
