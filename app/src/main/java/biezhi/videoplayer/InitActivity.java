@@ -49,6 +49,7 @@ import biezhi.videoplayer.DataModel.LoginModel;
 import biezhi.videoplayer.DataModel.WeiXinModel;
 import biezhi.videoplayer.MessageBox.ChannelBox;
 import biezhi.videoplayer.MessageBox.CheckUserMessage;
+import biezhi.videoplayer.MessageBox.StartActivityMessage;
 
 //需要完成的操作
 //判断是否是首次开启，首次开启要写文件
@@ -232,6 +233,12 @@ public class InitActivity extends AppCompatActivity {
             HomeModel homeModel = gson.fromJson(result, HomeModel.class);
             appData.setHomeEntityList(homeModel.getHome());
         }
+        EventBus.getDefault().post(new StartActivityMessage());
+
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void startMain(StartActivityMessage startActivityMessage) {
         //全部获取完毕，准备跳转
         startActivity(new Intent(InitActivity.this, MainActivity.class));
     }

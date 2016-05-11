@@ -114,7 +114,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 else
                 {
                     // todo 返回我的Fragment
-                    return null;
+                    return new NoNetFragment();
                 }
             }
         }
@@ -126,6 +126,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         public int getCount() {
             return tabName.length;
         }
+
     }
 
     @Override
