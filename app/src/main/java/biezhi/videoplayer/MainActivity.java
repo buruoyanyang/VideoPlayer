@@ -7,6 +7,7 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.view.animation.AnimationUtils;
 
 import com.rey.material.widget.ImageButton;
 import com.rey.material.widget.TabPageIndicator;
@@ -14,6 +15,7 @@ import com.rey.material.widget.TabPageIndicator;
 import java.util.ArrayList;
 
 import biezhi.videoplayer.Fragment.CateListFragment;
+import biezhi.videoplayer.Fragment.MyFragment;
 import biezhi.videoplayer.Fragment.NoNetFragment;
 import biezhi.videoplayer.Fragment.RecomListFragment;
 
@@ -48,8 +50,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         titleSearch.setOnClickListener(this);
     }
 
-    private void initTab()
-    {
+    private void initTab() {
         FragmentPagerAdapter adapter = new TabPageIndicatorAdapter(getSupportFragmentManager());
         ViewPager pager = (ViewPager) findViewById(R.id.pager);
         assert pager != null;
@@ -64,6 +65,23 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             @Override
             public void onPageSelected(int arg0) {
 //                Toast.makeText(getApplicationContext(), TITLE[arg0], Toast.LENGTH_SHORT).show();
+                if (arg0 == 2) {
+                    titleSearch.setVisibility(View.INVISIBLE);
+                    titleSearch.startAnimation(AnimationUtils.loadAnimation(MainActivity.this,R.anim.roll_out));
+                    titleDownload.setVisibility(View.INVISIBLE);
+                    titleDownload.startAnimation(AnimationUtils.loadAnimation(MainActivity.this,R.anim.roll_out));
+                    titleHistory.setVisibility(View.INVISIBLE);
+                    titleHistory.startAnimation(AnimationUtils.loadAnimation(MainActivity.this,R.anim.roll_out));
+                } else if (arg0 == 1) {
+                    if (titleSearch.getVisibility() != View.VISIBLE) {
+                        titleSearch.setVisibility(View.VISIBLE);
+                        titleSearch.startAnimation(AnimationUtils.loadAnimation(MainActivity.this, R.anim.roll_in));
+                        titleDownload.setVisibility(View.VISIBLE);
+                        titleDownload.startAnimation(AnimationUtils.loadAnimation(MainActivity.this, R.anim.roll_in));
+                        titleHistory.setVisibility(View.VISIBLE);
+                        titleHistory.startAnimation(AnimationUtils.loadAnimation(MainActivity.this, R.anim.roll_in));
+                    }
+                }
             }
 
             @Override
@@ -95,7 +113,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 //联网状态
                 if (position == 1) {
                     return new CateListFragment();
-                } else if (position == 0){
+                } else if (position == 0) {
                     ArrayList<String> hotIdList = new ArrayList<>();
                     ArrayList<String> hotNameList = new ArrayList<>();
                     Fragment fragment = new RecomListFragment();
@@ -110,18 +128,19 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     bundle.putStringArrayList("hotNames", hotNameList);
                     fragment.setArguments(bundle);
                     return fragment;
-                }
-                else
-                {
+                } else {
                     // todo 返回我的Fragment
-                    return new NoNetFragment();
+                    //同时隐藏按钮
+                    return new MyFragment();
                 }
             }
         }
+
         @Override
         public CharSequence getPageTitle(int position) {
             return tabName[position % tabName.length];
         }
+
         @Override
         public int getCount() {
             return tabName.length;

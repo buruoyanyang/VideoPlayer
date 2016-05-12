@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="100dp"
-        android:background="@color/md_blue_400">
+        android:background="@color/md_blue_400"
+        android:id="@+id/user_title">
         <TextView
             android:layout_width="10dp"
             android:layout_height="1dp"
@@ -31,20 +32,23 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:text="用户ID"
-                android:textSize="20dp"
+                android:text="@string/click_to_login"
+                android:textSize="20sp"
                 android:textColor="#FFFFFF"
                 android:paddingTop="10dp"
-                android:layout_centerInParent="true"/>
+                android:layout_centerInParent="true"
+                android:id="@+id/my_login_tv"/>
             <Button
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:background="@drawable/button_corner"
-                android:text="开通会员"
+                android:text="@string/get_vip"
                 android:gravity="center"
                 android:textColor="@color/md_blue_500"
                 android:drawableStart="@drawable/crown"
-                android:layout_above="@+id/user_help_tv4"/>
+                android:layout_above="@+id/user_help_tv4"
+                android:layout_centerHorizontal="true"
+                android:id="@+id/my_vip_bt"/>
             <TextView
                 android:layout_width="1dp"
                 android:layout_height="10dp"
@@ -57,14 +61,104 @@
             android:layout_alignParentEnd="true"
             android:id="@+id/user_help_tv3" />
         <ImageButton
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:src="@drawable/settings"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:src="@drawable/my_refresh_icon"
             android:scaleType="fitXY"
             android:background="#00000000"
             android:layout_alignParentEnd="true"
-            android:layout_below="@+id/user_help_tv3" />
+            android:layout_below="@+id/user_help_tv3"
+            android:id="@+id/my_refresh_login_icon" />
     </RelativeLayout>
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/user_title"
+        android:background="@drawable/video_background">
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:background="#ffffff"
+                android:orientation="horizontal"
+                android:id="@+id/my_favorate_download">
+                <com.rey.material.widget.Button
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:text="@string/my_favorate"
+                    android:background="@drawable/button_no_frame"
+                    android:textColor="@color/md_grey_700"
+                    android:layout_weight="1" />
+                <com.rey.material.widget.Button
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:background="@drawable/button_no_frame"
+                    android:text="@string/my_download"
+                    android:textColor="@color/md_grey_700"/>
+            </LinearLayout>
+            <TextView
+                android:layout_width="1dp"
+                android:layout_height="10dp"
+                android:background="@drawable/button_no_frame"
+                android:layout_below="@+id/my_favorate_download"
+                android:id="@+id/my_help_tv1"/>
+            <include layout="@layout/my_layout"
+                android:id="@+id/my_cache_layout"
+                android:layout_below="@+id/my_help_tv1"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"/>
+            <TextView
+                android:layout_width="1dp"
+                android:layout_height="10dp"
+                android:background="@drawable/button_no_frame"
+                android:layout_below="@+id/my_cache_layout"
+                android:id="@+id/my_help_tv2"/>
+            <include layout="@layout/my_layout"
+                android:id="@+id/my_setting_layout"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:layout_below="@+id/my_help_tv2"/>
+            <TextView
+                android:layout_width="1dp"
+                android:layout_height="100dp"
+                android:background="@drawable/button_no_frame"
+                android:layout_below="@+id/my_setting_layout"
+                android:id="@+id/my_help_tv3"/>
+            <include layout="@layout/my_layout"
+                android:id="@+id/my_update_layout"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:layout_below="@+id/my_help_tv3"/>
+            <TextView
+                android:layout_width="1dp"
+                android:layout_height="10dp"
+                android:layout_below="@+id/my_update_layout"
+                android:id="@+id/my_help_tv4"/>
+            <include layout="@layout/my_layout"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:layout_below="@+id/my_help_tv4"
+                android:id="@+id/my_about_layout" />
+            <TextView
+                android:layout_width="1dp"
+                android:layout_height="10dp"
+                android:layout_below="@+id/my_about_layout"
+                android:id="@+id/my_help_tv5"/>
+            <com.rey.material.widget.Button
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:layout_below="@+id/my_help_tv5"
+                android:background="@color/md_red_600"
+                android:id="@+id/my_logout_bt"
+                android:text="@string/my_logout"
+                android:textSize="20sp"
+                android:textColor="#FFFFFF" />
+        </RelativeLayout>
+
+    </ScrollView>
 
 
-</LinearLayout>
+</RelativeLayout>
