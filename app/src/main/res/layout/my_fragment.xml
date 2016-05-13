@@ -13,13 +13,20 @@
             android:layout_height="1dp"
             android:id="@+id/user_help_tv2"
             android:layout_alignParentStart="true"/>
-        <ImageView
+        <com.makeramen.roundedimageview.RoundedImageView
+            xmlns:app="http://schemas.android.com/apk/res-auto"
             android:layout_width="75dp"
-            android:layout_height="wrap_content"
-            android:src="@drawable/item_bg"
+            android:layout_height="75dp"
             android:id="@+id/user_image"
             android:layout_toEndOf="@id/user_help_tv2"
-            android:paddingTop="10dp"/>
+            android:layout_centerVertical="true"
+            android:src="@drawable/user_default_icon"
+            app:riv_corner_radius="75dip"
+            app:riv_border_width="0dip"
+            app:riv_border_color="#333333"
+            app:riv_mutate_background="true"
+            app:riv_tile_mode="repeat"
+            app:riv_oval="false" />
         <TextView
             android:layout_width="20dp"
             android:layout_height="1dp"
@@ -90,14 +97,18 @@
                     android:text="@string/my_favorate"
                     android:background="@drawable/button_no_frame"
                     android:textColor="@color/md_grey_700"
-                    android:layout_weight="1" />
+                    android:layout_weight="1"
+                    android:id="@+id/my_favorate_bt"
+                    android:drawableStart="@drawable/favorate_drawable"/>
                 <com.rey.material.widget.Button
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:background="@drawable/button_no_frame"
                     android:text="@string/my_download"
-                    android:textColor="@color/md_grey_700"/>
+                    android:textColor="@color/md_grey_700"
+                    android:id="@+id/my_download_bt"
+                    android:drawableStart="@drawable/download_drawable" />
             </LinearLayout>
             <TextView
                 android:layout_width="1dp"

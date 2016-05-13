@@ -33,5 +33,8 @@
         <item name="android:layout_gravity">center</item>
         <item name="android:gravity">center</item>
     </style>
+    <style name="myButtonStyle" parent="Base.Widget.AppCompat.Button">
+        <item name="tpi_tabRipple">@style/LightTabRippleStyle</item>
+    </style>
 
 </resources>
