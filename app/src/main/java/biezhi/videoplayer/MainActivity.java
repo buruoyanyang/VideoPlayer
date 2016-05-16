@@ -98,7 +98,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     /**
      * ViewPager适配器
      */
-    class TabPageIndicatorAdapter extends FragmentPagerAdapter {
+    class TabPageIndicatorAdapter extends FragmentPagerAdapter{
         public TabPageIndicatorAdapter(FragmentManager fm) {
             super(fm);
         }
