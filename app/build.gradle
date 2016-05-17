@@ -23,17 +23,27 @@ dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     testCompile 'junit:junit:4.12'
     compile 'com.android.support:appcompat-v7:23.3.0'
-    compile 'com.jaeger.statusbaruitl:library:1.0.0' //状态栏沉浸
-    compile 'com.squareup.okhttp3:okhttp:3.2.0'      //网络请求
-    compile 'com.google.code.gson:gson:2.4'          //Gson
-    compile 'com.wang.avi:library:1.0.4'             //loading图
-    compile 'com.nineoldandroids:library:2.4.0'      //material风格
-    compile 'com.github.rey5137:material:1.2.2'      //material风格
-    compile 'org.greenrobot:eventbus:3.0.0'          //消息处理
-    compile 'com.makeramen:roundedimageview:2.2.1'   //圆角图片 主要是拿来站位
-    compile 'jp.wasabeef:glide-transformations:2.0.1' //基于glide的裁剪库
-    compile 'org.xutils:xutils:3.3.34'               //三方框架，用于下载功能和数据库读写
-    compile 'com.demievil.library:refreshlayout:1.0.0@aar' //三方框架，用于下拉刷新以及加载更多
-    compile 'com.github.JakeWharton:ViewPagerIndicator:2.4.1'
-//    compile project(':ViewPagerIndicator')
+    compile 'com.jaeger.statusbaruitl:library:1.0.0'
+    //状态栏沉浸
+    compile 'com.squareup.okhttp3:okhttp:3.2.0'
+    //网络请求
+    compile 'com.google.code.gson:gson:2.4'
+    //Gson
+    compile 'com.wang.avi:library:1.0.4'
+    //loading图
+    compile 'com.nineoldandroids:library:2.4.0'
+    //material风格
+    compile 'com.github.rey5137:material:1.2.2'
+    //material风格
+    compile 'org.greenrobot:eventbus:3.0.0'
+    //消息处理
+    compile 'com.makeramen:roundedimageview:2.2.1'
+    //圆角图片 主要是拿来站位
+    compile 'jp.wasabeef:glide-transformations:2.0.1'
+    //基于glide的裁剪库
+    compile 'org.xutils:xutils:3.3.34'
+    //三方框架，用于下载功能和数据库读写
+    compile 'com.demievil.library:refreshlayout:1.0.0@aar'
+    //三方框架，用于下拉刷新以及加载更多
+    compile files('libs/viewpagerindicator_v1.0.2.jar')
 }

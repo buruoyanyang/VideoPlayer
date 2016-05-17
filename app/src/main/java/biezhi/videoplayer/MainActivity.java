@@ -2,22 +2,29 @@ package biezhi.videoplayer;
 
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.rey.material.widget.ImageButton;
-import com.rey.material.widget.TabPageIndicator;
 
-import java.util.ArrayList;
+import com.shizhefei.view.indicator.Indicator;
+import com.shizhefei.view.indicator.IndicatorViewPager;
+import com.shizhefei.view.indicator.IndicatorViewPager.IndicatorFragmentPagerAdapter;
+import com.shizhefei.view.viewpager.SViewPager;
 
-import biezhi.videoplayer.Fragment.CateListFragment;
+import java.net.HttpURLConnection;
+import java.util.HashMap;
+
 import biezhi.videoplayer.Fragment.MyFragment;
 import biezhi.videoplayer.Fragment.NoNetFragment;
-import biezhi.videoplayer.Fragment.RecomListFragment;
 
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
@@ -28,6 +35,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public ImageButton titleSearch;
     public ImageButton titleDownload;
     public ImageButton titleHistory;
+    private IndicatorViewPager indicatorViewPager;
+    private int lastView = 0;
+
 
 
     @Override
@@ -36,6 +46,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         setContentView(R.layout.activity_main);
         initClass();
         initTab();
+
     }
 
     private void initClass() {
@@ -51,102 +62,82 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void initTab() {
-        FragmentPagerAdapter adapter = new TabPageIndicatorAdapter(getSupportFragmentManager());
-        ViewPager pager = (ViewPager) findViewById(R.id.pager);
+        SViewPager pager = (SViewPager) findViewById(R.id.pager);
+        Indicator indicator = (Indicator) findViewById(R.id.indicator);
         assert pager != null;
-        pager.setAdapter(adapter);
-
-        //实例化TabPageIndicator然后设置ViewPager与之关联
-        TabPageIndicator indicator = (TabPageIndicator) findViewById(R.id.indicator);
-        assert indicator != null;
-        indicator.setViewPager(pager);
-        //如果我们要对ViewPager设置监听，用indicator设置就行了
-        indicator.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+        indicatorViewPager = new IndicatorViewPager(indicator, pager);
+        indicatorViewPager.setIndicatorOnTransitionListener(new Indicator.OnTransitionListener() {
             @Override
-            public void onPageSelected(int arg0) {
-//                Toast.makeText(getApplicationContext(), TITLE[arg0], Toast.LENGTH_SHORT).show();
-                if (arg0 == 2) {
-                    titleSearch.setVisibility(View.INVISIBLE);
-                    titleSearch.startAnimation(AnimationUtils.loadAnimation(MainActivity.this,R.anim.roll_out));
-                    titleDownload.setVisibility(View.INVISIBLE);
-                    titleDownload.startAnimation(AnimationUtils.loadAnimation(MainActivity.this,R.anim.roll_out));
-                    titleHistory.setVisibility(View.INVISIBLE);
-                    titleHistory.startAnimation(AnimationUtils.loadAnimation(MainActivity.this,R.anim.roll_out));
-                } else if (arg0 == 1) {
-                    if (titleSearch.getVisibility() != View.VISIBLE) {
-                        titleSearch.setVisibility(View.VISIBLE);
-                        titleSearch.startAnimation(AnimationUtils.loadAnimation(MainActivity.this, R.anim.roll_in));
-                        titleDownload.setVisibility(View.VISIBLE);
-                        titleDownload.startAnimation(AnimationUtils.loadAnimation(MainActivity.this, R.anim.roll_in));
-                        titleHistory.setVisibility(View.VISIBLE);
-                        titleHistory.startAnimation(AnimationUtils.loadAnimation(MainActivity.this, R.anim.roll_in));
-                    }
+            public void onTransition(View selectItemView, int select, float preSelect) {
+                Animation animation = AnimationUtils.loadAnimation(MainActivity.this, R.anim.refresh);
+                if (lastView != select && preSelect > 0.5)
+                {
+
                 }
-            }
+                if (select == 1)
+                {
+//                    selectItemView.startAnimation(animation);
+                }
+                else if (select == 2)
+                {
+                    selectItemView.clearAnimation();
+                }
 
-            @Override
-            public void onPageScrolled(int arg0, float arg1, int arg2) {
-            }
-
-            @Override
-            public void onPageScrollStateChanged(int arg0) {
             }
         });
-
+        indicatorViewPager.setAdapter(new FragmentAdapter(getSupportFragmentManager()));
+        //允许滑动
+        pager.setCanScroll(true);
+        //设置不重新加载页数
+        pager.setOffscreenPageLimit(3);
     }
 
-    /**
-     * ViewPager适配器
-     */
-    class TabPageIndicatorAdapter extends FragmentPagerAdapter{
-        public TabPageIndicatorAdapter(FragmentManager fm) {
-            super(fm);
-        }
 
-        @Override
-        public Fragment getItem(int position) {
-            //需要判断下是否是联网状态
-            if (appData.getCateUrls().size() <= 0) {
-                //非联网状态
-                return new NoNetFragment();
-            } else {
-                //联网状态
-                if (position == 1) {
-                    return new CateListFragment();
-                } else if (position == 0) {
-                    ArrayList<String> hotIdList = new ArrayList<>();
-                    ArrayList<String> hotNameList = new ArrayList<>();
-                    Fragment fragment = new RecomListFragment();
-                    if (appData.getHomeEntityList().size() != 0) {
-                        for (int i = 0; i < appData.getHomeEntityList().size(); i++) {
-                            hotIdList.add(String.valueOf(appData.getHomeEntityList().get(i).getId()));
-                            hotNameList.add(String.valueOf(appData.getHomeEntityList().get(i).getName()));
-                        }
-                    }
-                    Bundle bundle = new Bundle();
-                    bundle.putStringArrayList("hotIds", hotIdList);
-                    bundle.putStringArrayList("hotNames", hotNameList);
-                    fragment.setArguments(bundle);
-                    return fragment;
-                } else {
-                    // todo 返回我的Fragment
-                    //同时隐藏按钮
-                    return new MyFragment();
-                }
-            }
-        }
+    private class FragmentAdapter extends IndicatorFragmentPagerAdapter {
 
-        @Override
-        public CharSequence getPageTitle(int position) {
-            return tabName[position % tabName.length];
+        private int[] tabIcons =
+                {
+                        R.drawable.maintab_recome_selector,
+                        R.drawable.maintab_chanel_selector,
+                        R.drawable.maintab_my_selector
+                };
+        private LayoutInflater inflater;
+
+        public FragmentAdapter(FragmentManager fragmentManager) {
+            super(fragmentManager);
+            inflater = LayoutInflater.from(getApplicationContext());
         }
 
         @Override
         public int getCount() {
-            return tabName.length;
+            return tabIcons.length;
         }
 
+        @Override
+        public View getViewForTab(int position, View convertView, ViewGroup container) {
+            if (convertView == null) {
+                convertView = inflater.inflate(R.layout.tab_layout, container, false);
+            }
+            ImageView textView = (ImageView) convertView;
+//            textView.setText(tabName[position]);
+//            textView.setCompoundDrawablesWithIntrinsicBounds(0, tabIcons[position], 0, 0);
+            textView.setImageResource(tabIcons[position]);
+            return convertView;
+        }
+
+        @Override
+        public Fragment getFragmentForPage(int i) {
+            if (i == 0) {
+                return new NoNetFragment();
+            } else if (i == 2) {
+                return new MyFragment();
+            } else {
+                return new NoNetFragment();
+            }
+
+        }
     }
+
 
     @Override
     public void onClick(View v) {

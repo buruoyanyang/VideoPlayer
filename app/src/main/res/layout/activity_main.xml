@@ -1,25 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="biezhi.videoplayer.MainActivity">
+    tools:context="biezhi.videoplayer.MainActivity"
+    android:background="@color/md_grey_200">
     <include
         android:id="@+id/title"
         layout="@layout/default_title_bar" />
-    <com.rey.material.widget.TabPageIndicator
-        android:id="@+id/indicator"
-        style="@style/LightTabPageIndicator"
+    <com.shizhefei.view.indicator.FixedIndicatorView
         android:layout_width="match_parent"
         android:layout_height="48dp"
-        app:tpi_indicatorAtTop="true"
-        app:tpi_mode="fixed"
-        android:layout_alignParentBottom="true"/>
-    <android.support.v4.view.ViewPager
+        android:layout_above="@+id/main_help_tv1"
+        android:id="@+id/indicator"
+        style="@style/LightTabPageIndicator">
+    </com.shizhefei.view.indicator.FixedIndicatorView>
+    <TextView
+        android:layout_width="1dp"
+        android:layout_height="5dp"
+        android:id="@+id/main_help_tv1"
+        android:layout_alignParentBottom="true" />
+    <com.shizhefei.view.viewpager.SViewPager
         android:id="@+id/pager"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@id/title"
         android:layout_above="@+id/indicator"/>
+
 </RelativeLayout>
