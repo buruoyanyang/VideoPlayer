@@ -4,14 +4,12 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
-import android.widget.TextView;
 
 import com.rey.material.widget.ImageButton;
 
@@ -19,9 +17,6 @@ import com.shizhefei.view.indicator.Indicator;
 import com.shizhefei.view.indicator.IndicatorViewPager;
 import com.shizhefei.view.indicator.IndicatorViewPager.IndicatorFragmentPagerAdapter;
 import com.shizhefei.view.viewpager.SViewPager;
-
-import java.net.HttpURLConnection;
-import java.util.HashMap;
 
 import biezhi.videoplayer.Fragment.MyFragment;
 import biezhi.videoplayer.Fragment.NoNetFragment;
@@ -66,33 +61,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         Indicator indicator = (Indicator) findViewById(R.id.indicator);
         assert pager != null;
         indicatorViewPager = new IndicatorViewPager(indicator, pager);
-        indicatorViewPager.setIndicatorOnTransitionListener(new Indicator.OnTransitionListener() {
-            @Override
-            public void onTransition(View selectItemView, int select, float preSelect) {
-                Animation animation = AnimationUtils.loadAnimation(MainActivity.this, R.anim.refresh);
-                if (lastView != select && preSelect > 0.5)
-                {
-
-                }
-                if (select == 1)
-                {
-//                    selectItemView.startAnimation(animation);
-                }
-                else if (select == 2)
-                {
-                    selectItemView.clearAnimation();
-                }
-
-            }
-        });
         indicatorViewPager.setAdapter(new FragmentAdapter(getSupportFragmentManager()));
         //允许滑动
         pager.setCanScroll(true);
         //设置不重新加载页数
         pager.setOffscreenPageLimit(3);
     }
-
-
     private class FragmentAdapter extends IndicatorFragmentPagerAdapter {
 
         private int[] tabIcons =
@@ -134,7 +108,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             } else {
                 return new NoNetFragment();
             }
-
         }
     }
 

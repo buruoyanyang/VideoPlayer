@@ -46,4 +46,5 @@ dependencies {
     compile 'com.demievil.library:refreshlayout:1.0.0@aar'
     //三方框架，用于下拉刷新以及加载更多
     compile files('libs/viewpagerindicator_v1.0.2.jar')
+    //取代TabHost
 }
