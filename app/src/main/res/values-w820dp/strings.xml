@@ -6,4 +6,6 @@
     <string name="get_vip">开通会员</string>
     <string name="click_to_login">点我登陆/注册</string>
     <string name="my_download">我的缓存</string>
+    <string name="video_name">电影名称</string>
+    <string name="recom_hot_name">  今日热播</string>
 </resources>

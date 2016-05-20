@@ -1,5 +1,8 @@
 package biezhi.videoplayer;
 
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
@@ -7,9 +10,8 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.rey.material.widget.ImageButton;
 
@@ -18,8 +20,12 @@ import com.shizhefei.view.indicator.IndicatorViewPager;
 import com.shizhefei.view.indicator.IndicatorViewPager.IndicatorFragmentPagerAdapter;
 import com.shizhefei.view.viewpager.SViewPager;
 
+import java.util.ArrayList;
+
+import biezhi.videoplayer.Fragment.CateListFragment;
 import biezhi.videoplayer.Fragment.MyFragment;
 import biezhi.videoplayer.Fragment.NoNetFragment;
+import biezhi.videoplayer.Fragment.RecomListFragment;
 
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
@@ -30,15 +36,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public ImageButton titleSearch;
     public ImageButton titleDownload;
     public ImageButton titleHistory;
-    private IndicatorViewPager indicatorViewPager;
-    private int lastView = 0;
-
+    private boolean isOnLine = true;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        isOnLine = checkNet();
         initClass();
         initTab();
 
@@ -56,17 +61,33 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         titleSearch.setOnClickListener(this);
     }
 
+    private boolean checkNet() {
+        //检查网络信息，允许以离线状态启动
+        boolean netInfo;
+        ConnectivityManager connectivityManage = (ConnectivityManager) getApplicationContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo.State mobile = connectivityManage.getNetworkInfo(ConnectivityManager.TYPE_MOBILE).getState();
+        NetworkInfo.State wifi = connectivityManage.getNetworkInfo(ConnectivityManager.TYPE_WIFI).getState();
+        if (mobile == NetworkInfo.State.CONNECTED && wifi == NetworkInfo.State.DISCONNECTED) {
+            netInfo = true;
+            Toast.makeText(this.getApplicationContext(), R.string.netInfoWarning, Toast.LENGTH_SHORT).show();
+        } else {
+            netInfo = wifi == NetworkInfo.State.CONNECTED;
+        }
+        return netInfo;
+    }
+
     private void initTab() {
         SViewPager pager = (SViewPager) findViewById(R.id.pager);
         Indicator indicator = (Indicator) findViewById(R.id.indicator);
         assert pager != null;
-        indicatorViewPager = new IndicatorViewPager(indicator, pager);
+        IndicatorViewPager indicatorViewPager = new IndicatorViewPager(indicator, pager);
         indicatorViewPager.setAdapter(new FragmentAdapter(getSupportFragmentManager()));
         //允许滑动
         pager.setCanScroll(true);
         //设置不重新加载页数
         pager.setOffscreenPageLimit(3);
     }
+
     private class FragmentAdapter extends IndicatorFragmentPagerAdapter {
 
         private int[] tabIcons =
@@ -93,24 +114,44 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 convertView = inflater.inflate(R.layout.tab_layout, container, false);
             }
             ImageView textView = (ImageView) convertView;
-//            textView.setText(tabName[position]);
-//            textView.setCompoundDrawablesWithIntrinsicBounds(0, tabIcons[position], 0, 0);
             textView.setImageResource(tabIcons[position]);
             return convertView;
         }
 
         @Override
-        public Fragment getFragmentForPage(int i) {
-            if (i == 0) {
+        public Fragment getFragmentForPage(int position) {
+            if (!isOnLine) {
                 return new NoNetFragment();
-            } else if (i == 2) {
-                return new MyFragment();
             } else {
-                return new NoNetFragment();
+                if (position == 0) {
+                    //处理home数据
+                    ArrayList<String> hotIdList = new ArrayList<>();
+                    ArrayList<String> hotNameList = new ArrayList<>();
+                    if (appData.getHomeEntityList().size() > 0) {
+                        for (int i = 0; i < appData.getHomeEntityList().size(); i++) {
+                            hotIdList.add(String.valueOf(appData.getHomeEntityList().get(i).getId()));
+                            hotNameList.add(String.valueOf(appData.getHomeEntityList().get(i).getName()));
+                        }
+                    }
+                    Bundle bundle = new Bundle();
+                    bundle.putStringArrayList("hotIds", hotIdList);
+                    bundle.putStringArrayList("hotNames", hotNameList);
+                    Fragment fragment = new RecomListFragment();
+                    fragment.setArguments(bundle);
+                    return fragment;
+                } else if (position == 2) {
+                    return new MyFragment();
+                } else {
+                    return new CateListFragment();
+                }
             }
         }
     }
 
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+    }
 
     @Override
     public void onClick(View v) {

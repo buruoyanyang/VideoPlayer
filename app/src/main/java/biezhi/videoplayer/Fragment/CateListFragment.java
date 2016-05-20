@@ -13,6 +13,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.makeramen.roundedimageview.RoundedImageView;
 
 import biezhi.videoplayer.CustomerClass.BaseLoadImage;
 import biezhi.videoplayer.Data;
@@ -80,28 +81,11 @@ public class CateListFragment extends Fragment {
             //使用glide-transformations加载图片
             Glide.with(superContext)
                     .load(appData.getCateUrls().get(position))
-                    .bitmapTransform(new RoundedCornersTransformation(superContext, 30, 30, RoundedCornersTransformation.CornerType.ALL))
                     .override(appData.getScreenHeight() / 6, appData.getScreenWidth() * 2 / 5)
-                    .crossFade(100)
                     .centerCrop()
                     .placeholder(R.drawable.item_bg)
                     .error(R.drawable.item_bg)
                     .into(imageView);
-//            Glide.with(videoList.this)
-//                    .load(searchContentEntityList.get(position).getCover())
-//                    .override(screenHeight / 6, screenWidth * 2 / 5)
-//                    .centerCrop()
-//                    .placeholder(holdBD)
-//                    .crossFade(100)
-//                    .error(holdBD)
-//                    .into(imageView);
-//            BaseLoadImage.load(
-//                    superContext,
-//                    appData.getCateUrls().get(position),
-//                    new RoundedCornersTransformation(superContext, 30, 30, RoundedCornersTransformation.CornerType.ALL),
-//                    appData.getScreenHeight() / 6,
-//                    appData.getScreenWidth() * 2 / 5,
-//                    imageView);
             textView.setText(appData.getCateNames().get(position));
             return convertView;
         }
