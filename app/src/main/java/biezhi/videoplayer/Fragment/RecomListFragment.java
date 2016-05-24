@@ -1,6 +1,9 @@
 package biezhi.videoplayer.Fragment;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.SparseArray;
@@ -48,6 +51,8 @@ public class RecomListFragment extends Fragment {
     LayoutInflater inflater;
     boolean isRefresh = false;
     List<String> jsonList = new ArrayList<>();
+    BitmapDrawable holdBD;
+    Bitmap holdBM;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -70,6 +75,8 @@ public class RecomListFragment extends Fragment {
         refresh.setLastUpdateTimeRelateObject(superContext);
         refresh.disableWhenHorizontalMove(false);
         refresh.setPtrHandler(new refreshHandler());
+        holdBM = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.item_bg), appData.getScreenHeight() / 6, appData.getScreenWidth() * 2 / 5, false);
+        holdBD = new BitmapDrawable(holdBM);
 
 
     }
@@ -161,8 +168,8 @@ public class RecomListFragment extends Fragment {
                             .load(list.get(loop).getCover())
                             .override(appData.getScreenHeight() / 6, appData.getScreenWidth() * 2 / 5)
                             .centerCrop()
-                            .placeholder(R.drawable.item_bg)
-                            .error(R.drawable.item_bg)
+                            .placeholder(holdBD)
+                            .error(holdBD)
                             .into(imageView);
                     imageView.setTag(R.id.image_tag, list.get(loop).getId());
                     textView.setText(list.get(loop).getName());

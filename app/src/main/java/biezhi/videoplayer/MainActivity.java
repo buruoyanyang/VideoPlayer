@@ -1,6 +1,7 @@
 package biezhi.videoplayer;
 
 import android.content.Context;
+import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.support.v4.app.Fragment;
@@ -155,6 +156,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public void onClick(View v) {
+        startActivity(new Intent(MainActivity.this,videoList.class));
 
     }
 }
