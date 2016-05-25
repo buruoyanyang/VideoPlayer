@@ -42,6 +42,7 @@ public class Data extends Application {
     //微信
     private String weixinId = "";
     private String weixinBanner = "";
+    private String clickedCateId;
 
 
     public List<HomeModel.HomeEntity> getHomeEntityList() {
@@ -163,4 +164,11 @@ public class Data extends Application {
         super.onCreate();
     }
 
+    public String getClickedCateId() {
+        return clickedCateId;
+    }
+
+    public void setClickedCateId(String clickedCateId) {
+        this.clickedCateId = clickedCateId;
+    }
 }

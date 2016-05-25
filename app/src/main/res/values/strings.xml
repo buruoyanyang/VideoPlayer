@@ -19,4 +19,8 @@
     <string name="recom_url">http://115.29.190.54:99/Recommends.aspx</string>
     <string name="video_name">电影名称</string>
     <string name="recom_hot_name">  今日热播</string>
+    <string name="default_page_num">30</string>
+    <string name="default_order">2</string>
+    <string name="default_district">0</string>
+    <string name="default_kind">0</string>
 </resources>

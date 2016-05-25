@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:cube_ptr="http://schemas.android.com/apk/res-auto"
     android:background="@drawable/video_background"
     tools:context="biezhi.videoplayer.videoList">
     <include layout="@layout/default_title_bar"
@@ -13,26 +14,38 @@
         android:layout_below="@+id/list_title_bar"
         android:id="@+id/list_help_tv1"
         android:visibility="invisible" />
-    <in.srain.cube.views.loadmore.LoadMoreGridViewContainer
-        android:id="@+id/load_more_grid_view_container"
+    <in.srain.cube.views.ptr.PtrClassicFrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="#00000000"
-        android:layout_below="@+id/list_help_tv1">
-        <in.srain.cube.views.GridViewWithHeaderAndFooter
-            android:id="@+id/load_more_grid_view"
+        android:layout_below="@+id/list_help_tv1"
+        android:id="@+id/video_list_refresh"
+        cube_ptr:ptr_duration_to_close="300"
+        cube_ptr:ptr_duration_to_close_header="2000"
+        cube_ptr:ptr_keep_header_when_refresh="true"
+        cube_ptr:ptr_pull_to_fresh="false"
+        cube_ptr:ptr_ratio_of_header_height_to_refresh="1.2"
+        cube_ptr:ptr_resistance="1.7">
+        <in.srain.cube.views.loadmore.LoadMoreGridViewContainer
+            android:id="@+id/load_more_grid_view_container"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:fadingEdge="none"
-            android:focusable="false"
-            android:horizontalSpacing="10dp"
-            android:listSelector="@android:color/transparent"
-            android:numColumns="3"
-            android:paddingLeft="12dp"
-            android:paddingRight="12dp"
-            android:scrollbarStyle="outsideOverlay"
-            android:stretchMode="columnWidth" />
-    </in.srain.cube.views.loadmore.LoadMoreGridViewContainer>
+            android:background="#00000000">
+            <in.srain.cube.views.GridViewWithHeaderAndFooter
+                android:id="@+id/load_more_grid_view"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:fadingEdge="none"
+                android:focusable="false"
+                android:horizontalSpacing="10dp"
+                android:listSelector="@android:color/transparent"
+                android:numColumns="3"
+                android:paddingLeft="12dp"
+                android:paddingRight="12dp"
+                android:scrollbarStyle="outsideOverlay"
+                android:stretchMode="columnWidth" />
+        </in.srain.cube.views.loadmore.LoadMoreGridViewContainer>
+    </in.srain.cube.views.ptr.PtrClassicFrameLayout>
+
 
 
 </RelativeLayout>
