@@ -162,7 +162,7 @@ public class RecomListFragment extends Fragment {
                     if (isRefresh) {
                         loop = (loop + 3) % 6;
                     }
-                    Glide.with(superContext.getApplicationContext())
+                    Glide.with(superContext)
                             .load(list.get(loop).getCover())
                             .override(appData.getScreenHeight() / 6, appData.getScreenWidth() * 2 / 5)
                             .centerCrop()

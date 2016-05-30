@@ -1,8 +1,15 @@
 package biezhi.videoplayer;
 
+import android.content.Context;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.SparseArray;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.BaseAdapter;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.google.gson.Gson;
 import com.jaeger.library.StatusBarUtil;
@@ -15,6 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import biezhi.videoplayer.CustomerClass.BaseHttpClient;
+import biezhi.videoplayer.CustomerClass.BaseLoadImage;
 import biezhi.videoplayer.CustomerClass.HttpErrorCatch;
 import biezhi.videoplayer.DataModel.VideoModel;
 import biezhi.videoplayer.MessageBox.VideoListMessage;
@@ -36,9 +44,13 @@ public class videoList extends AppCompatActivity {
     PtrClassicFrameLayout ptrRefresh;
     int currentPageNum = 0;
     List<VideoModel> videosList = new ArrayList<>();
+    List<VideoModel.ChannelsEntity> videoChanels = new ArrayList<>();
+    List<VideoModel.ContentEntity> videoContents = new ArrayList<>();
     Data appData;
     boolean isLoadMore = false;
     boolean hasMore = true;
+    int loadedVideoCount = 0;
+    private LayoutInflater inflater;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,6 +64,7 @@ public class videoList extends AppCompatActivity {
     private void initClass() {
         appData = (Data) this.getApplicationContext();
         EventBus.getDefault().register(this);
+        inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         //首先进来应该直接加载一次
         loadMoreGridViewContainer = (LoadMoreGridViewContainer) findViewById(R.id.load_more_grid_view_container);
         mGridView = (GridViewWithHeaderAndFooter) findViewById(R.id.load_more_grid_view);
@@ -62,6 +75,7 @@ public class videoList extends AppCompatActivity {
         ptrRefresh.setLastUpdateTimeRelateObject(this);
         ptrRefresh.setPtrHandler(new refreshHandler());
         ptrRefresh.disableWhenHorizontalMove(false);
+        EventBus.getDefault().post(new VideoListMessage());
     }
 
     private void initGridList() {
@@ -83,13 +97,16 @@ public class videoList extends AppCompatActivity {
             VideoModel videos = gson.fromJson(json, VideoModel.class);
             if (isLoadMore) {
                 if (videosList.size() > 4) {
+                    loadedVideoCount = videos.getContent().size();
                     videosList.clear();
                     videosList.add(videos);
                 } else {
+                    loadedVideoCount += videos.getContent().size();
                     videosList.add(videos);
                 }
                 hasMore = Boolean.valueOf(videos.getHas_next());
             } else {
+                loadedVideoCount = videos.getContent().size();
                 videosList.clear();
                 videosList.add(videos);
             }
@@ -99,9 +116,54 @@ public class videoList extends AppCompatActivity {
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void videoListOK(VideoListOKMessage message)
-    {
+    public void videoListOK(VideoListOKMessage message) {
 
+    }
+
+    class GridAdapter extends BaseAdapter {
+
+        @Override
+        public int getCount() {
+            return loadedVideoCount;
+        }
+
+        @Override
+        public Object getItem(int position) {
+            return null;
+        }
+
+        @Override
+        public long getItemId(int position) {
+            return position;
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+            if (convertView == null) {
+                convertView = inflater.inflate(R.layout.video_item_adapter, parent, false);
+            }
+            ImageView imageView = ViewHolder.get(convertView, R.id.cate_image);
+            TextView textView = ViewHolder.get(convertView, R.id.cate_name);
+
+
+
+        }
+    }
+
+    static class ViewHolder {
+        public static <T extends View> T get(View view, int id) {
+            SparseArray<View> viewHolder = (SparseArray<View>) view.getTag();
+            if (viewHolder == null) {
+                viewHolder = new SparseArray<>();
+                view.setTag(viewHolder);
+            }
+            View childView = viewHolder.get(id);
+            if (childView == null) {
+                childView = view.findViewById(id);
+                viewHolder.put(id, childView);
+            }
+            return (T) childView;
+        }
     }
 
 
@@ -112,6 +174,7 @@ public class videoList extends AppCompatActivity {
 
         }
     }
+
 
     class refreshHandler implements PtrHandler {
 

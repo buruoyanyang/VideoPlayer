@@ -1,6 +1,7 @@
 package biezhi.videoplayer.CustomerClass;
 
 import android.content.Context;
+import android.graphics.drawable.BitmapDrawable;
 import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
@@ -21,13 +22,24 @@ public class BaseLoadImage {
 //    public static int RCT = 4;
 
 
-    public static void load(Context context, String url,Transformation transformation,int width,int height,ImageView imageView) {
+    public static void load(Context context, String url, Transformation transformation, int width, int height, ImageView imageView, BitmapDrawable bitmapDrawable) {
         Glide.with(context)
                 .load(url)
                 .override(width,height)
-                .bitmapTransform(transformation)
+                .centerCrop()
+                .placeholder(bitmapDrawable)
+                .error(bitmapDrawable)
                 .into(imageView);
     }
+
+
+//    Glide.with(superContext)
+//            .load(list.get(loop).getCover())
+//            .override(appData.getScreenHeight() / 6, appData.getScreenWidth() * 2 / 5)
+//            .centerCrop()
+//    .placeholder(holdBD)
+//    .error(holdBD)
+//    .into(imageView);
 
     /**
      Glide.with(superContext)
@@ -35,4 +47,6 @@ public class BaseLoadImage {
      .bitmapTransform(new CropCircleTransformation(superContext))
      .into(imageView);
      * */
+
+
 }
