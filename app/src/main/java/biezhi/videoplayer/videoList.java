@@ -1,6 +1,9 @@
 package biezhi.videoplayer;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.SparseArray;
@@ -43,14 +46,14 @@ public class videoList extends AppCompatActivity {
     GridViewWithHeaderAndFooter mGridView;
     PtrClassicFrameLayout ptrRefresh;
     int currentPageNum = 0;
-    List<VideoModel> videosList = new ArrayList<>();
-    List<VideoModel.ChannelsEntity> videoChanels = new ArrayList<>();
+    List<VideoModel.ChannelsEntity> videoChannels = new ArrayList<>();
     List<VideoModel.ContentEntity> videoContents = new ArrayList<>();
     Data appData;
     boolean isLoadMore = false;
     boolean hasMore = true;
-    int loadedVideoCount = 0;
     private LayoutInflater inflater;
+    BitmapDrawable holdBD;
+    Bitmap holdBM;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,6 +78,8 @@ public class videoList extends AppCompatActivity {
         ptrRefresh.setLastUpdateTimeRelateObject(this);
         ptrRefresh.setPtrHandler(new refreshHandler());
         ptrRefresh.disableWhenHorizontalMove(false);
+        holdBM = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.item_bg), appData.getScreenHeight() / 6, appData.getScreenWidth() * 2 / 5, false);
+        holdBD = new BitmapDrawable(holdBM);
         EventBus.getDefault().post(new VideoListMessage());
     }
 
@@ -96,35 +101,39 @@ public class videoList extends AppCompatActivity {
             Gson gson = new Gson();
             VideoModel videos = gson.fromJson(json, VideoModel.class);
             if (isLoadMore) {
-                if (videosList.size() > 4) {
-                    loadedVideoCount = videos.getContent().size();
-                    videosList.clear();
-                    videosList.add(videos);
+                if (videoContents.size() < 120) {
+                    videoContents.addAll(videos.getContent());
                 } else {
-                    loadedVideoCount += videos.getContent().size();
-                    videosList.add(videos);
+                    videoContents.clear();
+                    videoContents = videos.getContent();
                 }
                 hasMore = Boolean.valueOf(videos.getHas_next());
+                videoChannels = videos.getChannels();
             } else {
-                loadedVideoCount = videos.getContent().size();
-                videosList.clear();
-                videosList.add(videos);
+                videoContents = videos.getContent();
+                videoChannels = videos.getChannels();
             }
             //处理完毕，通知准备修改UI
-
+            EventBus.getDefault().post(new VideoListOKMessage());
         }
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void videoListOK(VideoListOKMessage message) {
-
+        GridAdapter adapter = new GridAdapter();
+        mGridView.setAdapter(adapter);
+        if (isLoadMore) {
+            loadMoreGridViewContainer.loadMoreFinish(false, hasMore);
+        } else {
+            ptrRefresh.refreshComplete();
+        }
     }
 
     class GridAdapter extends BaseAdapter {
 
         @Override
         public int getCount() {
-            return loadedVideoCount;
+            return videoContents.size();
         }
 
         @Override
@@ -144,9 +153,9 @@ public class videoList extends AppCompatActivity {
             }
             ImageView imageView = ViewHolder.get(convertView, R.id.cate_image);
             TextView textView = ViewHolder.get(convertView, R.id.cate_name);
-
-
-
+            BaseLoadImage.load(videoList.this, videoContents.get(position).getUrl(), null, appData.getScreenHeight() / 6, appData.getScreenWidth() * 2 / 5, imageView, holdBD);
+            textView.setText(videoContents.get(position).getName());
+            return convertView;
         }
     }
 
