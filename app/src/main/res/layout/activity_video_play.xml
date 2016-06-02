@@ -6,6 +6,10 @@
     tools:context="biezhi.videoplayer.videoPlay">
     <include layout="@layout/default_title_bar"
         android:id="@+id/video_play_title"/>
-    
+    <tv.danmaku.ijk.media.widget.media.IjkVideoView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+
+
 
 </RelativeLayout>

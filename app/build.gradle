@@ -52,8 +52,9 @@ dependencies {
     compile 'in.srain.cube:cube-sdk:1.0.44@aar'
     //加载更多
 
-    compile 'tv.danmaku.ijk.media:ijkplayer-java:0.5.1'
-    compile 'tv.danmaku.ijk.media:ijkplayer-armv7a:0.5.1'
+//    compile 'tv.danmaku.ijk.media:ijkplayer-java:0.5.1'
+//    compile 'tv.danmaku.ijk.media:ijkplayer-armv7a:0.5.1'
+    compile project(':IjkplayerLib')
     //播放器
     
 }

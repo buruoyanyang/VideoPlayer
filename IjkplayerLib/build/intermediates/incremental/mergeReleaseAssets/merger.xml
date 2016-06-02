@@ -1,0 +1,2 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merger version="3"><dataSet config="main"><source path="/Users/xiaofeng/Desktop/VideoPlayer/IjkplayerLib/src/main/assets"/><source path="/Users/xiaofeng/Desktop/VideoPlayer/IjkplayerLib/build/generated/assets/shaders/release"/></dataSet><dataSet config="release"><source path="/Users/xiaofeng/Desktop/VideoPlayer/IjkplayerLib/src/release/assets"/></dataSet></merger>
