@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/md_grey_600"
+        android:alpha="0.6">
+        <ImageView
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:src="@drawable/video_play"
+            android:padding="5dp"
+            android:id="@+id/media_play_pause"/>
+        <SeekBar
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_toEndOf="@+id/media_play_pause"
+            android:paddingTop="2dp"
+            android:thumb="@drawable/seek_bar_point"
+            android:id="@+id/media_seek_bar"
+            android:layout_toStartOf="@+id/media_full_screen"/>
+        <com.rey.material.widget.TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="#ffffff"
+            android:layout_below="@+id/media_seek_bar"
+            android:text=""
+            android:layout_toEndOf="@+id/media_play_pause"
+            android:paddingStart="5dp"
+            android:id="@+id/media_time_total"/>
+        <com.rey.material.widget.TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="#ffffff"
+            android:layout_below="@+id/media_seek_bar"
+            android:text=""
+            android:layout_toStartOf="@+id/media_full_screen"
+            android:paddingEnd="5dp"
+            android:id="@+id/media_time_current" />
+        <ImageView
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_alignParentEnd="true"
+            android:src="@drawable/full_screen"
+            android:padding="5dp"
+            android:id="@+id/media_full_screen"/>
+
+    </RelativeLayout>
+
+
+
+</RelativeLayout>

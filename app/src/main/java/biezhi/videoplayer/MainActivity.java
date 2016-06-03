@@ -156,7 +156,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public void onClick(View v) {
-        startActivity(new Intent(MainActivity.this,videoList.class));
+        startActivity(new Intent(MainActivity.this,videoPlay.class));
 
     }
 }

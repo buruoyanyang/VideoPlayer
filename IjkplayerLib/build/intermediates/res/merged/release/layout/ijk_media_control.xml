@@ -40,8 +40,6 @@
             android:layout_centerVertical="true"
             android:paddingLeft="4dip"
             android:paddingRight="4dip" />
-
-
         <SeekBar
             android:id="@+id/mediacontroller_seekbar"
             style="@style/MediaController_SeekBar"
