@@ -8,4 +8,5 @@
     <string name="my_download">我的缓存</string>
     <string name="video_name">电影名称</string>
     <string name="recom_hot_name">  今日热播</string>
+    <string name="video_source_from">来源</string>
 </resources>

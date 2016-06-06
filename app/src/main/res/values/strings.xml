@@ -23,4 +23,5 @@
     <string name="default_order">2</string>
     <string name="default_district">0</string>
     <string name="default_kind">0</string>
+    <string name="video_source_from">来源</string>
 </resources>
