@@ -7,14 +7,16 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/md_grey_600"
-        android:alpha="0.6">
-        <ImageView
+        android:background="@color/md_grey_400"
+        android:alpha="0.5">
+        <com.rey.material.widget.ImageButton
             android:layout_width="50dp"
             android:layout_height="50dp"
             android:src="@drawable/video_play"
             android:padding="5dp"
-            android:id="@+id/media_play_pause"/>
+            android:id="@+id/media_play_pause"
+            android:background="#00000000"
+            android:scaleType="fitXY"/>
         <SeekBar
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -41,16 +43,14 @@
             android:layout_toStartOf="@+id/media_full_screen"
             android:paddingEnd="5dp"
             android:id="@+id/media_time_current" />
-        <ImageView
+        <com.rey.material.widget.ImageButton
             android:layout_width="50dp"
             android:layout_height="50dp"
             android:layout_alignParentEnd="true"
             android:src="@drawable/full_screen"
             android:padding="5dp"
-            android:id="@+id/media_full_screen"/>
-
+            android:id="@+id/media_full_screen"
+            android:scaleType="fitXY"
+            android:background="#00000000"/>
     </RelativeLayout>
-
-
-
 </RelativeLayout>

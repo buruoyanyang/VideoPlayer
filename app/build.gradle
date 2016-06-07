@@ -56,5 +56,6 @@ dependencies {
 //    compile 'tv.danmaku.ijk.media:ijkplayer-armv7a:0.5.1'
     compile project(':IjkplayerLib')
     //播放器
-    
+
+    compile 'com.google.android.gms:play-services-appindexing:8.1.0'
 }
