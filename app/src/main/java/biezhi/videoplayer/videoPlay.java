@@ -103,9 +103,8 @@ public class videoPlay extends AppCompatActivity implements IMediaPlayer.OnPrepa
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         qualitySpinner.setAdapter(adapter);
         qualitySpinner.setOnItemSelectedListener(this);
-
         progressView = (ProgressView) findViewById(R.id.video_loading_on);
-
+        //根据videoId请求播放地址
     }
 
     private void initVideo() {
