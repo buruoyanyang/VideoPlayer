@@ -171,4 +171,5 @@ public class Data extends Application {
     public void setClickedCateId(String clickedCateId) {
         this.clickedCateId = clickedCateId;
     }
+
 }

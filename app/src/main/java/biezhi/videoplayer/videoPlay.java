@@ -1,21 +1,19 @@
 package biezhi.videoplayer;
 
-import android.net.Uri;
+
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.view.Surface;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ArrayAdapter;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 
-import com.google.android.gms.appindexing.Action;
-import com.google.android.gms.appindexing.AppIndex;
-import com.google.android.gms.common.api.GoogleApiClient;
+
 import com.rey.material.widget.ImageButton;
 import com.rey.material.widget.ProgressView;
 import com.rey.material.widget.Spinner;
@@ -23,7 +21,6 @@ import com.rey.material.widget.TextView;
 
 import tv.danmaku.ijk.media.player.IMediaPlayer;
 import tv.danmaku.ijk.media.player.IjkMediaPlayer;
-import tv.danmaku.ijk.media.widget.media.IjkVideoView;
 
 public class videoPlay extends AppCompatActivity implements IMediaPlayer.OnPreparedListener, View.OnClickListener, IMediaPlayer.OnInfoListener, IMediaPlayer.OnErrorListener,
         IMediaPlayer.OnBufferingUpdateListener, IMediaPlayer.OnSeekCompleteListener, SeekBar.OnSeekBarChangeListener, Spinner.OnItemSelectedListener {
@@ -50,6 +47,9 @@ public class videoPlay extends AppCompatActivity implements IMediaPlayer.OnPrepa
     private IjkMediaPlayer mediaPlayer;
     //holder
     private SurfaceHolder surfaceHolder;
+    //播放器布局
+    private LinearLayout videoViewLL;
+
 
     //控制器相关
     ImageButton playOrPauseButton;
@@ -60,16 +60,16 @@ public class videoPlay extends AppCompatActivity implements IMediaPlayer.OnPrepa
     RelativeLayout controllerRl;
 
     //来源相关
+    //所有来源不初始化，需要一个初始化一个
     Spinner qualitySpinner;
     private int[] sourceBitIds;
     ImageButton downloadAddButton;
     ImageButton favorateAddButton;
-    /**
-     * ATTENTION: This was auto-generated to implement the App Indexing API.
-     * See https://g.co/AppIndexing/AndroidStudio for more information.
-     */
-    private GoogleApiClient client;
-    //所有来源不初始化，需要一个初始化一个
+
+
+    //视频信息相关
+    RelativeLayout videoInfoRl;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,9 +77,7 @@ public class videoPlay extends AppCompatActivity implements IMediaPlayer.OnPrepa
         setContentView(R.layout.activity_video_play);
         initClass();
         initVideo();
-        // ATTENTION: This was auto-generated to implement the App Indexing API.
-        // See https://g.co/AppIndexing/AndroidStudio for more information.
-        client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
+
     }
 
     //加载,初始化所有资源
@@ -104,7 +102,9 @@ public class videoPlay extends AppCompatActivity implements IMediaPlayer.OnPrepa
         qualitySpinner.setAdapter(adapter);
         qualitySpinner.setOnItemSelectedListener(this);
         progressView = (ProgressView) findViewById(R.id.video_loading_on);
+        videoInfoRl = (RelativeLayout)findViewById(R.id.video_info_rl);
         //根据videoId请求播放地址
+        //默认使用老接口处理
     }
 
     private void initVideo() {
@@ -134,6 +134,7 @@ public class videoPlay extends AppCompatActivity implements IMediaPlayer.OnPrepa
         }
         totalTimeTv = (TextView) findViewById(R.id.media_time_total);
         currentTimeTv = (TextView) findViewById(R.id.media_time_current);
+
     }
 
     @Override
@@ -150,6 +151,12 @@ public class videoPlay extends AppCompatActivity implements IMediaPlayer.OnPrepa
             Animation animation = AnimationUtils.loadAnimation(videoPlay.this, R.anim.video_controller_out);
             controllerRl.setAnimation(animation);
             controllerRl.setVisibility(View.INVISIBLE);
+        }
+        if (v == fullScreenButton)
+        {
+            LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.GONE,LinearLayout.GONE);
+//            lp.addRule(RelativeLayout.GONE);
+            videoInfoRl.setLayoutParams(lp);
         }
     }
 
@@ -193,43 +200,4 @@ public class videoPlay extends AppCompatActivity implements IMediaPlayer.OnPrepa
 
     }
 
-    @Override
-    public void onStart() {
-        super.onStart();
-
-        // ATTENTION: This was auto-generated to implement the App Indexing API.
-        // See https://g.co/AppIndexing/AndroidStudio for more information.
-        client.connect();
-        Action viewAction = Action.newAction(
-                Action.TYPE_VIEW, // TODO: choose an action type.
-                "videoPlay Page", // TODO: Define a title for the content shown.
-                // TODO: If you have web page content that matches this app activity's content,
-                // make sure this auto-generated web page URL is correct.
-                // Otherwise, set the URL to null.
-                Uri.parse("http://host/path"),
-                // TODO: Make sure this auto-generated app URL is correct.
-                Uri.parse("android-app://biezhi.videoplayer/http/host/path")
-        );
-        AppIndex.AppIndexApi.start(client, viewAction);
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-
-        // ATTENTION: This was auto-generated to implement the App Indexing API.
-        // See https://g.co/AppIndexing/AndroidStudio for more information.
-        Action viewAction = Action.newAction(
-                Action.TYPE_VIEW, // TODO: choose an action type.
-                "videoPlay Page", // TODO: Define a title for the content shown.
-                // TODO: If you have web page content that matches this app activity's content,
-                // make sure this auto-generated web page URL is correct.
-                // Otherwise, set the URL to null.
-                Uri.parse("http://host/path"),
-                // TODO: Make sure this auto-generated app URL is correct.
-                Uri.parse("android-app://biezhi.videoplayer/http/host/path")
-        );
-        AppIndex.AppIndexApi.end(client, viewAction);
-        client.disconnect();
-    }
 }
