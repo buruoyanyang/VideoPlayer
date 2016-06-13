@@ -1,11 +1,18 @@
 package biezhi.videoplayer;
 
 
+import android.content.pm.ActivityInfo;
+import android.content.res.Configuration;
+import android.net.Uri;
+import android.os.Build;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
+import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ArrayAdapter;
@@ -18,6 +25,8 @@ import com.rey.material.widget.ImageButton;
 import com.rey.material.widget.ProgressView;
 import com.rey.material.widget.Spinner;
 import com.rey.material.widget.TextView;
+
+import java.io.IOException;
 
 import tv.danmaku.ijk.media.player.IMediaPlayer;
 import tv.danmaku.ijk.media.player.IjkMediaPlayer;
@@ -49,6 +58,7 @@ public class videoPlay extends AppCompatActivity implements IMediaPlayer.OnPrepa
     private SurfaceHolder surfaceHolder;
     //播放器布局
     private LinearLayout videoViewLL;
+    private SurfaceHolder holder;
 
 
     //控制器相关
@@ -70,11 +80,21 @@ public class videoPlay extends AppCompatActivity implements IMediaPlayer.OnPrepa
     //视频信息相关
     RelativeLayout videoInfoRl;
 
+    //工具栏相关
+    LinearLayout titleLayoutLl;
+
+    Data appData;
+
+    RelativeLayout rootRl;
+
+    int DEFAULTFLAG = 0;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_video_play);
+        appData = (Data) this.getApplication();
         initClass();
         initVideo();
 
@@ -102,9 +122,14 @@ public class videoPlay extends AppCompatActivity implements IMediaPlayer.OnPrepa
         qualitySpinner.setAdapter(adapter);
         qualitySpinner.setOnItemSelectedListener(this);
         progressView = (ProgressView) findViewById(R.id.video_loading_on);
-        videoInfoRl = (RelativeLayout)findViewById(R.id.video_info_rl);
+        videoInfoRl = (RelativeLayout) findViewById(R.id.video_info_rl);
+        titleLayoutLl = (LinearLayout) findViewById(R.id.video_play_title);
+        rootRl = (RelativeLayout) findViewById(R.id.video_root_rl);
+        DEFAULTFLAG = rootRl.getSystemUiVisibility();
+        //将全屏标志写入application
         //根据videoId请求播放地址
         //默认使用老接口处理
+
     }
 
     private void initVideo() {
@@ -134,7 +159,43 @@ public class videoPlay extends AppCompatActivity implements IMediaPlayer.OnPrepa
         }
         totalTimeTv = (TextView) findViewById(R.id.media_time_total);
         currentTimeTv = (TextView) findViewById(R.id.media_time_current);
+        holder = videoView.getHolder();
+        try {
+            mediaPlayer.setDataSource(this, Uri.parse("http://player.pptvyun.com/svc/m3u8player/pl/0a2dnq6Zo6elnquL4K2eoaucoeydnqecoKOf.m3u8"));
+            holder.addCallback(new SurfaceHolder.Callback() {
+                @Override
+                public void surfaceCreated(SurfaceHolder holder) {
 
+                }
+
+                @Override
+                public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
+                    mediaPlayer.setDisplay(holder);
+                }
+
+                @Override
+                public void surfaceDestroyed(SurfaceHolder holder) {
+
+                }
+            });
+            mediaPlayer.prepareAsync();
+            mediaPlayer.start();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    private void steepStatusBar() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            // 透明状态栏
+            getWindow().addFlags(
+                    WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+            // 透明导航栏
+            getWindow().addFlags(
+                    WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
+//            WindowManager.LayoutParams.TYPE_STATUS_BAR
+        }
     }
 
     @Override
@@ -143,21 +204,91 @@ public class videoPlay extends AppCompatActivity implements IMediaPlayer.OnPrepa
 
     @Override
     public void onClick(View v) {
-        if (controllerRl.getVisibility() == View.INVISIBLE) {
-            Animation animation = AnimationUtils.loadAnimation(videoPlay.this, R.anim.video_controller_in);
-            controllerRl.setAnimation(animation);
-            controllerRl.setVisibility(View.VISIBLE);
-        } else {
-            Animation animation = AnimationUtils.loadAnimation(videoPlay.this, R.anim.video_controller_out);
-            controllerRl.setAnimation(animation);
-            controllerRl.setVisibility(View.INVISIBLE);
+        if (v == videoView) {
+            if (appData.isFullScreen()) {
+                if (controllerRl.getVisibility() == View.INVISIBLE) {
+                    Animation animation = AnimationUtils.loadAnimation(videoPlay.this, R.anim.video_controller_in);
+                    controllerRl.setAnimation(animation);
+                    controllerRl.setVisibility(View.VISIBLE);
+                    steepStatusBar();
+                    rootRl.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
+
+
+                } else {
+                    Animation animation = AnimationUtils.loadAnimation(videoPlay.this, R.anim.video_controller_out);
+                    controllerRl.setAnimation(animation);
+                    controllerRl.setVisibility(View.INVISIBLE);
+                    rootRl.setSystemUiVisibility(View.SYSTEM_UI_FLAG_FULLSCREEN);
+                }
+            } else {
+                if (controllerRl.getVisibility() == View.INVISIBLE) {
+                    Animation animation = AnimationUtils.loadAnimation(videoPlay.this, R.anim.video_controller_in);
+                    controllerRl.setAnimation(animation);
+                    controllerRl.setVisibility(View.VISIBLE);
+                } else {
+                    Animation animation = AnimationUtils.loadAnimation(videoPlay.this, R.anim.video_controller_out);
+                    controllerRl.setAnimation(animation);
+                    controllerRl.setVisibility(View.INVISIBLE);
+                }
+            }
         }
-        if (v == fullScreenButton)
+        if (v == fullScreenButton) {
+            if (appData.isFullScreen()) {
+                //release当前的MediaPlayer
+                videoPlay.this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+                rootRl.setSystemUiVisibility(DEFAULTFLAG);
+                appData.setFullScreen(false);
+            } else {
+                videoPlay.this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+                appData.setFullScreen(true);
+
+            }
+        }
+        if (v == playOrPauseButton)
         {
-            LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.GONE,LinearLayout.GONE);
-//            lp.addRule(RelativeLayout.GONE);
-            videoInfoRl.setLayoutParams(lp);
+            rootRl.setSystemUiVisibility(View.SYSTEM_UI_FLAG_VISIBLE);
         }
+        if (v== searchButton)
+        {
+            rootRl.setSystemUiVisibility(View.INVISIBLE);
+        }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+    }
+
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        if (appData.isFullScreen()) {
+            videoInfoRl.setVisibility(View.GONE);
+            DisplayMetrics dm = new DisplayMetrics();
+            getWindowManager().getDefaultDisplay().getMetrics(dm);
+            RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(dm.widthPixels, dm.heightPixels);
+            layoutParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
+            layoutParams.addRule(RelativeLayout.ALIGN_PARENT_TOP);
+            layoutParams.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
+            layoutParams.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
+            videoView.setLayoutParams(layoutParams);
+            titleLayoutLl.setVisibility(View.GONE);
+//            steepStatusBar();
+//            rootRl.setSystemUiVisibility(View.INVISIBLE);
+            rootRl.setSystemUiVisibility(View.SYSTEM_UI_FLAG_FULLSCREEN);
+        } else {
+            videoInfoRl.setVisibility(View.VISIBLE);
+            DisplayMetrics dm = new DisplayMetrics();
+            getWindowManager().getDefaultDisplay().getMetrics(dm);
+            RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(dm.widthPixels, dm.heightPixels);
+            layoutParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
+            layoutParams.addRule(RelativeLayout.ALIGN_PARENT_TOP);
+            layoutParams.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
+            layoutParams.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
+            videoView.setLayoutParams(layoutParams);
+            titleLayoutLl.setVisibility(View.VISIBLE);
+        }
+        super.onConfigurationChanged(newConfig);
     }
 
     @Override

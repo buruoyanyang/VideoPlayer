@@ -4,7 +4,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    tools:context="biezhi.videoplayer.videoPlay">
+    tools:context="biezhi.videoplayer.videoPlay"
+    android:id="@+id/video_root_rl">
     <include layout="@layout/default_title_bar"
         android:id="@+id/video_play_title"/>
     <LinearLayout

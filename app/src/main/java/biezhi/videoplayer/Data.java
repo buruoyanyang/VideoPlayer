@@ -44,6 +44,9 @@ public class Data extends Application {
     private String weixinBanner = "";
     private String clickedCateId;
 
+    //播放器相关
+    private boolean isFullScreen = false;
+
 
     public List<HomeModel.HomeEntity> getHomeEntityList() {
         return homeEntityList;
@@ -172,4 +175,11 @@ public class Data extends Application {
         this.clickedCateId = clickedCateId;
     }
 
+    public boolean isFullScreen() {
+        return isFullScreen;
+    }
+
+    public void setFullScreen(boolean fullScreen) {
+        isFullScreen = fullScreen;
+    }
 }
