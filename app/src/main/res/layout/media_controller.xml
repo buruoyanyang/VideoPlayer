@@ -7,8 +7,8 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/md_grey_400"
-        android:alpha="0.5">
+        android:background="@color/md_black"
+        android:alpha="0.4">
         <com.rey.material.widget.ImageButton
             android:layout_width="50dp"
             android:layout_height="50dp"

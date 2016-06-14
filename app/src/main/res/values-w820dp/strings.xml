@@ -9,4 +9,5 @@
     <string name="video_name">电影名称</string>
     <string name="recom_hot_name">  今日热播</string>
     <string name="video_source_from">来源</string>
+    <string name="choose_episode">选集</string>
 </resources>
