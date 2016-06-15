@@ -26,8 +26,14 @@ import com.rey.material.widget.ProgressView;
 import com.rey.material.widget.Spinner;
 import com.rey.material.widget.TextView;
 
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
+
 import java.io.IOException;
 
+import biezhi.videoplayer.MessageBox.SeekBarChangeMessage;
+import biezhi.videoplayer.MessageBox.SeekBarChangedMessage;
 import tv.danmaku.ijk.media.player.IMediaPlayer;
 import tv.danmaku.ijk.media.player.IjkMediaPlayer;
 
@@ -59,6 +65,8 @@ public class videoPlay extends AppCompatActivity implements IMediaPlayer.OnPrepa
     //播放器布局
     private LinearLayout videoViewLL;
     private SurfaceHolder holder;
+    long totalTime = 0;
+    long currentTime = 0;
 
 
     //控制器相关
@@ -71,6 +79,7 @@ public class videoPlay extends AppCompatActivity implements IMediaPlayer.OnPrepa
     RelativeLayout titleControllerRl;
     ImageButton lockVideo;
     boolean isLocked = false;
+    boolean seekBarAutoFlag = true;
 
     //来源相关
     //所有来源不初始化，需要一个初始化一个
@@ -103,10 +112,10 @@ public class videoPlay extends AppCompatActivity implements IMediaPlayer.OnPrepa
 
     //加载,初始化所有资源
     private void initClass() {
+        EventBus.getDefault().register(this);
         titleButton = (ImageButton) findViewById(R.id.title_app_button);
         titleTv = (TextView) findViewById(R.id.title_app_tv);
         titleButton.setOnClickListener(this);
-
         searchButton = (ImageButton) findViewById(R.id.title_app_search);
         downloadButton = (ImageButton) findViewById(R.id.title_app_download);
         historyButton = (ImageButton) findViewById(R.id.title_app_history);
@@ -149,6 +158,7 @@ public class videoPlay extends AppCompatActivity implements IMediaPlayer.OnPrepa
         lockVideo = (ImageButton) findViewById(R.id.video_lockOrUnlock);
         assert lockVideo != null;
         lockVideo.setVisibility(View.INVISIBLE);
+        lockVideo.setOnClickListener(this);
         if (playOrPauseButton != null) {
             playOrPauseButton.setOnClickListener(this);
         }
@@ -164,7 +174,7 @@ public class videoPlay extends AppCompatActivity implements IMediaPlayer.OnPrepa
         currentTimeTv = (TextView) findViewById(R.id.media_time_current);
         holder = videoView.getHolder();
         try {
-            mediaPlayer.setDataSource(this, Uri.parse("http://vr.tudou.com/v2proxy/v2.m3u8?it=256752864"));
+            mediaPlayer.setDataSource(this, Uri.parse("http://lecloud.educdn.huan.tv/mediadns/ts/AK/CDN2016051800171.mp4"));
             holder.addCallback(new SurfaceHolder.Callback() {
                 @Override
                 public void surfaceCreated(SurfaceHolder holder) {
@@ -182,8 +192,8 @@ public class videoPlay extends AppCompatActivity implements IMediaPlayer.OnPrepa
                 }
             });
             mediaPlayer.prepareAsync();
-            mediaPlayer.start();
-            mediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "mediacodec", 1);
+            //硬解1 软解0
+            mediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "mediacodec", 0);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -203,45 +213,52 @@ public class videoPlay extends AppCompatActivity implements IMediaPlayer.OnPrepa
 
     @Override
     public void onBufferingUpdate(IMediaPlayer mp, int percent) {
+        Log.e("buffer", percent + "");
     }
 
     @Override
     public void onClick(View v) {
         if (v == videoView) {
             if (appData.isFullScreen()) {
-                if (controllerRl.getVisibility() == View.INVISIBLE) {
-                    if (!isLocked) {
+                if (isLocked) {
+                    if (lockVideo.getVisibility() == View.INVISIBLE) {
+                        lockVideo.bringToFront();
+                        Animation animation2 = AnimationUtils.loadAnimation(videoPlay.this, R.anim.video_lock_in);
+                        lockVideo.startAnimation(animation2);
+                        lockVideo.setVisibility(View.VISIBLE);
+                    } else {
+                        Animation animation2 = AnimationUtils.loadAnimation(videoPlay.this, R.anim.video_lock_out);
+                        lockVideo.setAnimation(animation2);
+                        lockVideo.setVisibility(View.INVISIBLE);
+                    }
+                } else {
+                    if (controllerRl.getVisibility() == View.INVISIBLE) {
                         Animation animation = AnimationUtils.loadAnimation(videoPlay.this, R.anim.video_controller_in);
                         controllerRl.setAnimation(animation);
                         controllerRl.setVisibility(View.VISIBLE);
                         Animation animation1 = AnimationUtils.loadAnimation(videoPlay.this, R.anim.video_title_in);
                         titleControllerRl.setAnimation(animation1);
                         titleControllerRl.setVisibility(View.VISIBLE);
+                        Animation animation2 = AnimationUtils.loadAnimation(videoPlay.this, R.anim.video_lock_in);
+                        lockVideo.startAnimation(animation2);
                         lockVideo.setVisibility(View.VISIBLE);
-                        //大于19情况下，全部正常
                         if (android.os.Build.VERSION.SDK_INT >= 19) {
                             steepStatusBar();
                             rootRl.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
                         }
                     } else {
-                        lockVideo.setVisibility(View.VISIBLE);
-                    }
-                    //19以下，不做其他修饰
-                } else {
-                    if (!isLocked) {
                         Animation animation = AnimationUtils.loadAnimation(videoPlay.this, R.anim.video_controller_out);
                         controllerRl.setAnimation(animation);
                         controllerRl.setVisibility(View.INVISIBLE);
                         Animation animation1 = AnimationUtils.loadAnimation(videoPlay.this, R.anim.video_title_out);
                         titleControllerRl.setAnimation(animation1);
                         titleControllerRl.setVisibility(View.INVISIBLE);
+                        Animation animation2 = AnimationUtils.loadAnimation(videoPlay.this, R.anim.video_lock_out);
+                        lockVideo.setAnimation(animation2);
                         lockVideo.setVisibility(View.INVISIBLE);
                         if (Build.VERSION.SDK_INT >= 19) {
                             rootRl.setSystemUiVisibility(View.SYSTEM_UI_FLAG_FULLSCREEN);
                         }
-
-                    } else {
-                        lockVideo.setVisibility(View.INVISIBLE);
                     }
                 }
             } else {
@@ -269,11 +286,38 @@ public class videoPlay extends AppCompatActivity implements IMediaPlayer.OnPrepa
                 appData.setFullScreen(true);
             }
         }
-        if (v==lockVideo)
-        {
-            if (isLocked)
-            {
+        if (v == lockVideo) {
+            if (isLocked) {
+                //不考虑非全屏状态，因为不可能点到
+                //显示所有控件
+                Animation animation = AnimationUtils.loadAnimation(videoPlay.this, R.anim.video_controller_in);
+                controllerRl.setAnimation(animation);
+                controllerRl.setVisibility(View.VISIBLE);
+                Animation animation1 = AnimationUtils.loadAnimation(videoPlay.this, R.anim.video_title_in);
+                titleControllerRl.setAnimation(animation1);
+                titleControllerRl.setVisibility(View.VISIBLE);
+                lockVideo.setVisibility(View.VISIBLE);
+                //大于19情况下，全部正常
+                if (android.os.Build.VERSION.SDK_INT >= 19) {
+                    steepStatusBar();
+                    rootRl.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
+                }
+                isLocked = !isLocked;
+                lockVideo.setImageResource(R.drawable.unlock);
 
+            } else {
+                Animation animation = AnimationUtils.loadAnimation(videoPlay.this, R.anim.video_controller_out);
+                controllerRl.setAnimation(animation);
+                controllerRl.setVisibility(View.INVISIBLE);
+                Animation animation1 = AnimationUtils.loadAnimation(videoPlay.this, R.anim.video_title_out);
+                titleControllerRl.setAnimation(animation1);
+                titleControllerRl.setVisibility(View.INVISIBLE);
+                lockVideo.setVisibility(View.INVISIBLE);
+                if (Build.VERSION.SDK_INT >= 19) {
+                    rootRl.setSystemUiVisibility(View.SYSTEM_UI_FLAG_FULLSCREEN);
+                }
+                isLocked = !isLocked;
+                lockVideo.setImageResource(R.drawable.lock);
             }
         }
 
@@ -299,7 +343,7 @@ public class videoPlay extends AppCompatActivity implements IMediaPlayer.OnPrepa
             videoView.setLayoutParams(layoutParams);
             titleLayoutLl.setVisibility(View.GONE);
             titleControllerRl.setVisibility(View.VISIBLE);
-            lockVideo.setVisibility(View.VISIBLE);
+            lockVideo.setVisibility(View.INVISIBLE);
             if (Build.VERSION.SDK_INT >= 19) {
                 rootRl.setSystemUiVisibility(View.SYSTEM_UI_FLAG_FULLSCREEN);
             } else {
@@ -328,6 +372,7 @@ public class videoPlay extends AppCompatActivity implements IMediaPlayer.OnPrepa
         super.onConfigurationChanged(newConfig);
     }
 
+
     @Override
     public boolean onError(IMediaPlayer mp, int what, int extra) {
         return false;
@@ -335,16 +380,43 @@ public class videoPlay extends AppCompatActivity implements IMediaPlayer.OnPrepa
 
     @Override
     public boolean onInfo(IMediaPlayer mp, int what, int extra) {
+        switch (what) {
+            case IjkMediaPlayer.MEDIA_INFO_BUFFERING_START:
+                //开始缓冲
+                progressView.setVisibility(View.VISIBLE);
+                break;
+            case IjkMediaPlayer.MEDIA_INFO_BUFFERING_END:
+                //缓冲结束
+                progressView.setVisibility(View.INVISIBLE);
+                mediaPlayer.start();
+                break;
+        }
         return false;
     }
 
     @Override
     public void onPrepared(IMediaPlayer mp) {
-
+        mediaPlayer.start();
+        totalTime = mediaPlayer.getDuration();
+        currentTime = 0;
+        totalTimeTv.setText(getTime(totalTime));
+        currentTimeTv.setText(getTime(currentTime));
+        //隐藏菊花
+        progressView.setVisibility(View.INVISIBLE);
+        progressBar.setMax((int) mediaPlayer.getDuration());
+        videoView.setKeepScreenOn(true);
+        mediaPlayer.setScreenOnWhilePlaying(true);
+        EventBus.getDefault().post(new SeekBarChangeMessage());
     }
 
     @Override
     public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+        if (fromUser) {
+            if (mediaPlayer != null) {
+                mediaPlayer.seekTo(progress);
+            }
+//            currentTimeTv.setText(getTime(progress));
+        }
 
     }
 
@@ -366,6 +438,53 @@ public class videoPlay extends AppCompatActivity implements IMediaPlayer.OnPrepa
     @Override
     public void onItemSelected(Spinner parent, View view, int position, long id) {
 
+    }
+
+    @Subscribe(threadMode = ThreadMode.ASYNC)
+    public void changeSeekBar(SeekBarChangeMessage message) {
+        while (seekBarAutoFlag) {
+            if (mediaPlayer != null && mediaPlayer.isPlaying()) {
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                } finally {
+                    EventBus.getDefault().post(new SeekBarChangedMessage());
+                }
+            }
+        }
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void changeSeekBarByTime(SeekBarChangedMessage message) {
+        progressBar.setProgress((int) mediaPlayer.getCurrentPosition());
+        currentTimeTv.setText(getTime(mediaPlayer.getCurrentPosition()));
+    }
+
+    private String getTime(long timeSeconds) {
+        String formatTime;
+        String hour;
+        String minute;
+        String second;
+        timeSeconds = timeSeconds / 1000;
+        hour = String.valueOf(timeSeconds / 3600);
+        if (hour.length() < 2) {
+            hour = "0" + hour;
+        }
+        minute = String.valueOf(timeSeconds % 3600 / 60);
+        if (minute.length() < 2) {
+            minute = "0" + minute;
+        }
+        second = String.valueOf(timeSeconds % 3600 % 60);
+        if (second.length() < 2) {
+            second = "0" + second;
+        }
+        if (hour.equals("00")) {
+            formatTime = minute + ":" + second;
+        } else {
+            formatTime = hour + ":" + minute + ":" + second;
+        }
+        return formatTime;
     }
 
 }

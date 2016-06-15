@@ -17,32 +17,48 @@
             android:id="@+id/media_play_pause"
             android:background="#00000000"
             android:scaleType="fitXY"/>
-        <SeekBar
+        <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_toEndOf="@+id/media_play_pause"
-            android:paddingTop="2dp"
-            android:thumb="@drawable/seek_bar_point"
-            android:id="@+id/media_seek_bar"
-            android:layout_toStartOf="@+id/media_full_screen"/>
+            android:layout_toStartOf="@+id/media_full_screen"
+            android:id="@+id/media_seek_bar_rl">
+            <SeekBar
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:thumb="@drawable/seek_bar_point"
+                android:id="@+id/media_seek_bar" />
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="3dp"
+                android:layout_centerInParent="true"
+                android:id="@+id/controller_help_tv1"/>
+            <com.rey.material.widget.ProgressView
+                android:layout_width="match_parent"
+                android:layout_height="6dp"
+                android:layout_below="@id/controller_help_tv1"/>
+        </RelativeLayout>
+
+
         <com.rey.material.widget.TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="#ffffff"
-            android:layout_below="@+id/media_seek_bar"
+            android:layout_below="@+id/media_seek_bar_rl"
             android:text=""
             android:layout_toEndOf="@+id/media_play_pause"
             android:paddingStart="5dp"
-            android:id="@+id/media_time_total"/>
+            android:id="@+id/media_time_current"/>
         <com.rey.material.widget.TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="#ffffff"
-            android:layout_below="@+id/media_seek_bar"
+            android:layout_below="@+id/media_seek_bar_rl"
             android:text=""
             android:layout_toStartOf="@+id/media_full_screen"
             android:paddingEnd="5dp"
-            android:id="@+id/media_time_current" />
+            android:id="@+id/media_time_total" />
         <com.rey.material.widget.ImageButton
             android:layout_width="50dp"
             android:layout_height="50dp"
