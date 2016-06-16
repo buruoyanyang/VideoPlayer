@@ -415,7 +415,6 @@ public class videoPlay extends AppCompatActivity implements IMediaPlayer.OnPrepa
             if (mediaPlayer != null) {
                 mediaPlayer.seekTo(progress);
             }
-//            currentTimeTv.setText(getTime(progress));
         }
 
     }

@@ -8,16 +8,19 @@
     tools:context="biezhi.videoplayer.videoList">
     <include layout="@layout/default_title_bar"
         android:id="@+id/list_title_bar"/>
-    <TextView
-        android:layout_width="1dp"
-        android:layout_height="10dp"
+    <com.rey.material.widget.TabPageIndicator
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:layout_width="match_parent"
+        android:layout_height="30dp"
+        android:id="@+id/list_indicator"
+        app:tpi_mode="scroll"
         android:layout_below="@+id/list_title_bar"
-        android:id="@+id/list_help_tv1"
-        android:visibility="invisible" />
+        android:background="#00000000"/>
+
     <in.srain.cube.views.ptr.PtrClassicFrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@+id/list_help_tv1"
+        android:layout_below="@+id/list_indicator"
         android:id="@+id/video_list_refresh"
         cube_ptr:ptr_duration_to_close="300"
         cube_ptr:ptr_duration_to_close_header="2000"

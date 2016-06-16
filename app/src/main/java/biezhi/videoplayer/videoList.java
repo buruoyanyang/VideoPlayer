@@ -16,6 +16,7 @@ import android.widget.TextView;
 
 import com.google.gson.Gson;
 import com.jaeger.library.StatusBarUtil;
+import com.rey.material.widget.TabPageIndicator;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -54,6 +55,10 @@ public class videoList extends AppCompatActivity {
     private LayoutInflater inflater;
     BitmapDrawable holdBD;
     Bitmap holdBM;
+    private final int FROM_SEARCH = 1;
+    private final int FROM_CATE = 2;
+    int lastView = FROM_CATE;
+    TabPageIndicator videoListIndicator;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,6 +70,12 @@ public class videoList extends AppCompatActivity {
     }
 
     private void initClass() {
+        Bundle bundle = this.getIntent().getExtras();
+        if (bundle.get("lastView") == "CATE_LIST") {
+            lastView = FROM_CATE;
+        } else if (bundle.get("lastView") == "SEARCH_VIEW") {
+            lastView = FROM_SEARCH;
+        }
         appData = (Data) this.getApplicationContext();
         EventBus.getDefault().register(this);
         inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -80,6 +91,7 @@ public class videoList extends AppCompatActivity {
         ptrRefresh.disableWhenHorizontalMove(false);
         holdBM = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.item_bg), appData.getScreenHeight() / 6, appData.getScreenWidth() * 2 / 5, false);
         holdBD = new BitmapDrawable(holdBM);
+        videoListIndicator = (TabPageIndicator)findViewById(R.id.list_indicator);
         EventBus.getDefault().post(new VideoListMessage());
     }
 
@@ -122,6 +134,8 @@ public class videoList extends AppCompatActivity {
     public void videoListOK(VideoListOKMessage message) {
         GridAdapter adapter = new GridAdapter();
         mGridView.setAdapter(adapter);
+
+
         if (isLoadMore) {
             loadMoreGridViewContainer.loadMoreFinish(false, hasMore);
         } else {
@@ -155,6 +169,13 @@ public class videoList extends AppCompatActivity {
             TextView textView = ViewHolder.get(convertView, R.id.cate_name);
             BaseLoadImage.load(videoList.this, videoContents.get(position).getUrl(), null, appData.getScreenHeight() / 6, appData.getScreenWidth() * 2 / 5, imageView, holdBD);
             textView.setText(videoContents.get(position).getName());
+            imageView.setTag(R.id.image_tag,videoContents.get(position).getId());
+            imageView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+
+                }
+            });
             return convertView;
         }
     }
