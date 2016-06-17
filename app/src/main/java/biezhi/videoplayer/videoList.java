@@ -174,7 +174,9 @@ public class videoList extends AppCompatActivity {
                 @Override
                 public void onClick(View v) {
 
+
                 }
+
             });
             return convertView;
         }
