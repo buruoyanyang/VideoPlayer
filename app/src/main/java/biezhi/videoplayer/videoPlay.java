@@ -80,6 +80,7 @@ public class videoPlay extends AppCompatActivity implements IMediaPlayer.OnPrepa
     ImageButton lockVideo;
     boolean isLocked = false;
     boolean seekBarAutoFlag = true;
+    boolean isFullScreen = true;
 
     //来源相关
     //所有来源不初始化，需要一个初始化一个
@@ -93,7 +94,8 @@ public class videoPlay extends AppCompatActivity implements IMediaPlayer.OnPrepa
     RelativeLayout videoInfoRl;
 
     //工具栏相关
-    LinearLayout titleLayoutLl;
+    RelativeLayout titleLayoutLl;
+    TextView video_title_help_tv;
 
     Data appData;
 
@@ -105,6 +107,7 @@ public class videoPlay extends AppCompatActivity implements IMediaPlayer.OnPrepa
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_video_play);
         appData = (Data) this.getApplication();
+        steepStatusBar();
         initClass();
         initVideo();
 
@@ -133,9 +136,11 @@ public class videoPlay extends AppCompatActivity implements IMediaPlayer.OnPrepa
         qualitySpinner.setOnItemSelectedListener(this);
         progressView = (ProgressView) findViewById(R.id.video_loading_on);
         videoInfoRl = (RelativeLayout) findViewById(R.id.video_info_rl);
-        titleLayoutLl = (LinearLayout) findViewById(R.id.video_play_title);
+        titleLayoutLl = (RelativeLayout) findViewById(R.id.video_play_title);
+        video_title_help_tv = (TextView) findViewById(R.id.title_help_tv0);
+        assert video_title_help_tv != null;
+//        video_title_help_tv.setVisibility(View.GONE);
         rootRl = (RelativeLayout) findViewById(R.id.video_root_rl);
-
     }
 
     private void initVideo() {
@@ -151,7 +156,11 @@ public class videoPlay extends AppCompatActivity implements IMediaPlayer.OnPrepa
         mediaPlayer.setOnInfoListener(this);
         mediaPlayer.setOnSeekCompleteListener(this);
         controllerRl = (RelativeLayout) findViewById(R.id.video_controller_rl);
+        //隐藏控制栏,防止误点击
+        assert controllerRl != null;
+        controllerRl.setVisibility(View.INVISIBLE);
         titleControllerRl = (RelativeLayout) findViewById(R.id.video_title_controller_rl);
+        isFullScreen = false;
         assert titleControllerRl != null;
         titleControllerRl.setVisibility(View.INVISIBLE);
         playOrPauseButton = (ImageButton) findViewById(R.id.media_play_pause);
@@ -174,7 +183,7 @@ public class videoPlay extends AppCompatActivity implements IMediaPlayer.OnPrepa
         currentTimeTv = (TextView) findViewById(R.id.media_time_current);
         holder = videoView.getHolder();
         try {
-            mediaPlayer.setDataSource(this, Uri.parse("http://lecloud.educdn.huan.tv/mediadns/ts/AK/CDN2016051800171.mp4"));
+            mediaPlayer.setDataSource(this, Uri.parse("http://m3u8.cc/api?type=y115&vid=dq516b2bfbwjixye8&uuid=6343puFL*9xGCEljxieyckvUBnNIBIO2XJYkcUV1oCEwpQz8BMo&hd=2&key=6474oms7LCRRJTn0WbfJhIBBRtG0We9r76c8b2skkYG8Ec5kfwjSDdhAAdvEtw&mode=m3u8play&uidkey=7b55y2zkhqD1OzXoSym9p2lPt5Dprlbt7H9IY1XlIGEzJQ*enfEgDkPN2x3x"));
             holder.addCallback(new SurfaceHolder.Callback() {
                 @Override
                 public void surfaceCreated(SurfaceHolder holder) {
@@ -208,6 +217,8 @@ public class videoPlay extends AppCompatActivity implements IMediaPlayer.OnPrepa
             // 透明导航栏
             getWindow().addFlags(
                     WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
+        } else {
+            video_title_help_tv.setVisibility(View.GONE);
         }
     }
 
@@ -219,7 +230,7 @@ public class videoPlay extends AppCompatActivity implements IMediaPlayer.OnPrepa
     @Override
     public void onClick(View v) {
         if (v == videoView) {
-            if (appData.isFullScreen()) {
+            if (isFullScreen) {
                 if (isLocked) {
                     if (lockVideo.getVisibility() == View.INVISIBLE) {
                         lockVideo.bringToFront();
@@ -274,16 +285,16 @@ public class videoPlay extends AppCompatActivity implements IMediaPlayer.OnPrepa
             }
         }
         if (v == fullScreenButton) {
-            if (appData.isFullScreen()) {
+            if (isFullScreen) {
                 videoPlay.this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
                 WindowManager.LayoutParams attrs = getWindow().getAttributes();
                 attrs.flags &= (~WindowManager.LayoutParams.FLAG_FULLSCREEN);
                 getWindow().setAttributes(attrs);
                 getWindow().clearFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
-                appData.setFullScreen(false);
+                isFullScreen = false;
             } else {
                 videoPlay.this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-                appData.setFullScreen(true);
+                isFullScreen = true;
             }
         }
         if (v == lockVideo) {
@@ -331,7 +342,7 @@ public class videoPlay extends AppCompatActivity implements IMediaPlayer.OnPrepa
 
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
-        if (appData.isFullScreen()) {
+        if (isFullScreen) {
             videoInfoRl.setVisibility(View.GONE);
             DisplayMetrics dm = new DisplayMetrics();
             getWindowManager().getDefaultDisplay().getMetrics(dm);
@@ -403,6 +414,8 @@ public class videoPlay extends AppCompatActivity implements IMediaPlayer.OnPrepa
         currentTimeTv.setText(getTime(currentTime));
         //隐藏菊花
         progressView.setVisibility(View.INVISIBLE);
+        //显示控制栏
+        controllerRl.setVisibility(View.VISIBLE);
         progressBar.setMax((int) mediaPlayer.getDuration());
         videoView.setKeepScreenOn(true);
         mediaPlayer.setScreenOnWhilePlaying(true);

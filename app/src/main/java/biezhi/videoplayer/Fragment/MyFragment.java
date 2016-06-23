@@ -40,6 +40,7 @@ public class MyFragment extends Fragment implements View.OnClickListener {
     com.rey.material.widget.Button favorate;
 
 
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View contextView = inflater.inflate(R.layout.my_fragment, container, false);
