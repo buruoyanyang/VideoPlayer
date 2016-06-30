@@ -1,6 +1,7 @@
 package biezhi.videoplayer.CustomerClass;
 
 import android.annotation.SuppressLint;
+import android.support.annotation.NonNull;
 import android.util.Base64;
 
 
@@ -37,6 +38,7 @@ public class AESDecoder {
         return cipherData;
     }
 
+    @NonNull
     public static String encrypt(String key, String src) {
         try {
             byte[] rawKey = getRawKey(key.getBytes());
@@ -72,10 +74,12 @@ public class AESDecoder {
         return cipher.doFinal(src);
     }
 
+    @NonNull
     public static String toHex(String txt) {
         return toHex(txt.getBytes());
     }
 
+    @NonNull
     public static String toHex(byte[] buf) {
         if (buf == null)
             return "";

@@ -183,7 +183,7 @@ public class videoPlay extends AppCompatActivity implements IMediaPlayer.OnPrepa
         currentTimeTv = (TextView) findViewById(R.id.media_time_current);
         holder = videoView.getHolder();
         try {
-            mediaPlayer.setDataSource(this, Uri.parse("http://m3u8.cc/api?type=y115&vid=dq516b2bfbwjixye8&uuid=6343puFL*9xGCEljxieyckvUBnNIBIO2XJYkcUV1oCEwpQz8BMo&hd=2&key=6474oms7LCRRJTn0WbfJhIBBRtG0We9r76c8b2skkYG8Ec5kfwjSDdhAAdvEtw&mode=m3u8play&uidkey=7b55y2zkhqD1OzXoSym9p2lPt5Dprlbt7H9IY1XlIGEzJQ*enfEgDkPN2x3x"));
+            mediaPlayer.setDataSource(this, Uri.parse("http://videotsgo.115.com/api/video/m3u8/ts/CG4AHTIWUMUQ5ZAGJKBRPO2U36YPVQDC_2.m3u8?KEY1=31bbefc6978a3252b8044f7aee935e01&KEY2=5774b883&uid=337906024&hash=CG4AHTIWUMUQ5ZAGJKBRPO2U36YPVQDC&ip=2073191702&token=61b31fc67c0453262820947a1b70efa55b64c421&pickcode=c993cw2u1wb4cdbf1"));
             holder.addCallback(new SurfaceHolder.Callback() {
                 @Override
                 public void surfaceCreated(SurfaceHolder holder) {

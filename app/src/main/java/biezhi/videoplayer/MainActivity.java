@@ -9,11 +9,16 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.rey.material.widget.ImageButton;
@@ -40,6 +45,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public ImageButton titleDownload;
     public ImageButton titleHistory;
     private boolean isOnLine = true;
+    RelativeLayout titleBarRl;
+    int[] location = new int[2];
+    int[] rlMargin = new int[4];
+    RelativeLayout.LayoutParams oldLP;
+
 
 
     @Override
@@ -52,6 +62,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         initTab();
 
     }
+
     private void steepStatusBar() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             // 透明状态栏
@@ -69,10 +80,21 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         titleSearch = (ImageButton) findViewById(R.id.title_app_search);
         titleDownload = (ImageButton) findViewById(R.id.title_app_download);
         titleHistory = (ImageButton) findViewById(R.id.title_app_history);
+        titleBarRl = (RelativeLayout) findViewById(R.id.title_bar);
+        getLocation();
         assert titleHistory != null;
         titleHistory.setOnClickListener(this);
         titleDownload.setOnClickListener(this);
         titleSearch.setOnClickListener(this);
+    }
+
+    private void getLocation() {
+        titleBarRl.getLocationOnScreen(location);
+        rlMargin[0] = titleBarRl.getLeft();
+        rlMargin[1] = titleBarRl.getRight();
+        rlMargin[2] = titleBarRl.getTop();
+        rlMargin[3] = titleBarRl.getBottom();
+
     }
 
     private boolean checkNet() {
@@ -100,6 +122,39 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         pager.setCanScroll(true);
         //设置不重新加载页数
         pager.setOffscreenPageLimit(3);
+//        indicatorViewPager.setOnIndicatorPageChangeListener(new IndicatorViewPager.OnIndicatorPageChangeListener() {
+//            @Override
+//            public void onIndicatorPageChange(int i, int i1) {
+//                Log.d("i",String.valueOf(i));
+//                Log.d("i1",String.valueOf(i1));
+//                if (i1 == 2)
+//                {
+//                    Animation animation = AnimationUtils.loadAnimation(MainActivity.this, R.anim.video_title_out);
+//                    titleBarRl.startAnimation(animation);
+//                    titleBarRl.setVisibility(View.GONE);
+//
+//                }
+//                else
+//                {
+//                    Animation animation = AnimationUtils.loadAnimation(MainActivity.this, R.anim.video_title_in);
+//                    titleBarRl.startAnimation(animation);
+//                    titleBarRl.setVisibility(View.VISIBLE);
+//                }
+//            }
+//        });
+//        indicatorViewPager.setIndicatorOnTransitionListener(new Indicator.OnTransitionListener() {
+//            @Override
+//            public void onTransition(View view, int i, float v) {
+//                if(rlMargin[1] + rlMargin[3] == 0) {
+//                    getLocation();
+//                }
+//                if (i == 2 && v!= 0.0) {
+//                    RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) titleBarRl.getLayoutParams();
+//                    layoutParams.setMargins(0,0,rlMargin[1],(int)(rlMargin[3] * v));
+//                    titleBarRl.requestLayout();
+//                }
+//            }
+//        });
     }
 
     private class FragmentAdapter extends IndicatorFragmentPagerAdapter {
@@ -111,7 +166,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         R.drawable.maintab_my_selector
                 };
         private LayoutInflater inflater;
-
         public FragmentAdapter(FragmentManager fragmentManager) {
             super(fragmentManager);
             inflater = LayoutInflater.from(getApplicationContext());
@@ -129,6 +183,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
             ImageView textView = (ImageView) convertView;
             textView.setImageResource(tabIcons[position]);
+            if(position == 2)
+            {
+                titleBarRl.setVisibility(View.GONE);
+            }
+            else
+            {
+                titleBarRl.setVisibility(View.VISIBLE);
+            }
             return convertView;
         }
 
@@ -169,7 +231,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public void onClick(View v) {
-        startActivity(new Intent(MainActivity.this,videoPlay.class));
+        startActivity(new Intent(MainActivity.this, videoPlay.class));
 
     }
 }

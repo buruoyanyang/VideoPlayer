@@ -6,7 +6,7 @@
     tools:context="biezhi.videoplayer.MainActivity"
     android:background="@drawable/video_background">
     <include
-        android:id="@+id/title"
+        android:id="@+id/title_bar"
         layout="@layout/default_title_bar" />
     <com.shizhefei.view.indicator.FixedIndicatorView
         android:layout_width="match_parent"
@@ -24,7 +24,7 @@
         android:id="@+id/pager"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@id/title"
+        android:layout_below="@id/title_bar"
         android:layout_above="@+id/indicator"/>
 
 </RelativeLayout>

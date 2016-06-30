@@ -87,6 +87,7 @@ public class CateListFragment extends Fragment {
                     .error(R.drawable.item_bg)
                     .into(imageView);
             textView.setText(appData.getCateNames().get(position));
+
             return convertView;
         }
     }
